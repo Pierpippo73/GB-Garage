@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="content" method="upgrade">
+  <name>plg_content_jce</name>
+  <version>3.0.5</version>
+  <creationDate>11-11-2026</creationDate>
+  <author>Widget Factory (Pty) Ltd</author>
+  <authorEmail>info@joomlacontenteditor.net</authorEmail>
+  <authorUrl>http://www.joomlacontenteditor.net</authorUrl>
+  <copyright>Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved</copyright>
+  <license>GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html</license>
+  <description>PLG_CONTENT_JCE_XML_DESCRIPTION</description>
+
+  <namespace path="src">Joomla\Plugin\Content\Jce</namespace>
+
+  <files folder="plugins/content/jce">
+    <folder plugin="jce">language</folder>
+    <folder>services</folder>
+    <folder>src</folder>
+  </files>
+</extension>

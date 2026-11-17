@@ -1,0 +1,45 @@
+<?php
+/**
+ * @package     JCE
+ * @subpackage  Quickicon.Jce
+ *
+ * @copyright   Copyright (C) 2005 - 2023 Open Source Matters, Inc. All rights reserved
+ * @copyright   Copyright (c) 2023-2026 Ryan Demmer. All rights reserved
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+use Joomla\CMS\Extension\PluginInterface;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\DI\Container;
+use Joomla\DI\ServiceProviderInterface;
+use Joomla\Event\DispatcherInterface;
+use Joomla\Plugin\Quickicon\Jce\Extension\Jce;
+
+// register the namespace if the namespace map is out of date, eg: after an update
+if (!class_exists(Jce::class)) {
+    \JLoader::registerNamespace('Joomla\\Plugin\\Quickicon\\Jce', __DIR__ . '/../src');
+}
+
+return new class() implements ServiceProviderInterface
+{
+    public function register(Container $container)
+    {
+        $container->set(
+            PluginInterface::class,
+            function (Container $container) {
+                $dispatcher = $container->get(DispatcherInterface::class);
+
+                /** @disregard P1005 Passing the dispatcher is required for Joomla 5.0 - 5.3 */
+                $plugin = new Jce(
+                    $dispatcher,
+                    (array) PluginHelper::getPlugin('quickicon', 'jce')
+                );
+
+                $plugin->setApplication(Factory::getApplication());
+
+                return $plugin;
+            }
+        );
+    }
+};

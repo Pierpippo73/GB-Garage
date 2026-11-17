@@ -1,0 +1,67 @@
+<?php
+/**
+ * @package     Wfx.JCE
+ * @subpackage  JCE Admin
+ *
+ * @copyright   Copyright (c) 2023-2026 Ryan Demmer. All rights reserved
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+defined('_JEXEC') or die;
+
+use Joomla\CMS\Categories\CategoryFactoryInterface;
+use Joomla\CMS\Dispatcher\ComponentDispatcherFactoryInterface;
+use Joomla\CMS\Extension\ComponentInterface;
+use Joomla\CMS\Extension\Service\Provider\ComponentDispatcherFactory;
+use Joomla\CMS\Extension\Service\Provider\MVCFactory;
+use Joomla\CMS\HTML\Registry;
+use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use Joomla\Database\DatabaseInterface;
+use Joomla\DI\Container;
+use Joomla\DI\ServiceProviderInterface;
+
+use Joomla\Component\Jce\Administrator\Extension\Jce;
+
+// register the namespace if the namespace map is out of date, eg: after an update
+if (!class_exists(Jce::class)) {
+    \JLoader::registerNamespace('Joomla\\Component\\Jce\\Administrator', __DIR__ . '/../src');
+    \JLoader::registerNamespace('Joomla\\Component\\Jce\\Site', JPATH_SITE . '/components/com_jce/src');
+}
+
+/**
+ * The jce service provider.
+ *
+ * @since  4.0.0
+ */
+return new class implements ServiceProviderInterface
+{
+	/**
+	 * Registers the service provider with a DI container.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	public function register(Container $container)
+	{
+		$componentNamespace = '\\Joomla\\Component\\Jce';
+
+		$container->registerServiceProvider(new MVCFactory($componentNamespace));
+		$container->registerServiceProvider(new ComponentDispatcherFactory($componentNamespace));
+
+		$container->set(
+			ComponentInterface::class,
+			function (Container $container) {
+				$component = new Jce($container->get(ComponentDispatcherFactoryInterface::class));
+
+				$component->setRegistry($container->get(Registry::class));
+				$component->setMVCFactory($container->get(MVCFactoryInterface::class));
+				$component->setDatabase($container->get(DatabaseInterface::class));
+
+				return $component;
+			}
+		);
+	}
+};

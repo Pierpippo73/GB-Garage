@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4" type="plugin" group="system" method="upgrade">
+  <name>PLG_SYSTEM_SOURCERER</name>
+  <description>PLG_SYSTEM_SOURCERER_DESC</description>
+  <version>17.0.1</version>
+  <creationDate>October 2026</creationDate>
+  <author>Regular Labs (Peter van Westen)</author>
+  <authorEmail>info@regularlabs.com</authorEmail>
+  <authorUrl>https://regularlabs.com</authorUrl>
+  <copyright>Copyright © 2026 Regular Labs - All Rights Reserved</copyright>
+  <license>GNU General Public License version 2 or later</license>
+  <namespace path="src">RegularLabs\Plugin\System\Sourcerer</namespace>
+  <scriptfile>script.install.php</scriptfile>
+  <files>
+    <folder plugin="sourcerer">services</folder>
+    <folder>language</folder>
+    <folder>src</folder>
+  </files>
+  <media folder="media" destination="sourcerer">
+    <folder>images</folder>
+    <folder>js</folder>
+  </media>
+  <config>
+    <fields name="params" addfieldprefix="RegularLabs\Library\Form\Field">
+      <fieldset name="basic">
+        <field name="@load_script_descriptions" type="LoadMedia" filetype="script" file="regularlabs.admin-form-descriptions"/>
+        <field name="@load_language_regularlabs" type="LoadLanguage" extension="plg_system_regularlabs"/>
+        <field name="@jcompatibility" type="JCompatibility" extension="SOURCERER"/>
+        <field name="@license" type="License" extension="SOURCERER"/>
+        <field name="@version" type="Version" extension="SOURCERER"/>
+        <field name="@header" type="Header" label="SOURCERER" description="SOURCERER_DESC" url="https://regularlabs.com/sourcerer"/>
+      </fieldset>
+      <fieldset name="RL_SETTINGS_SECURITY">
+        <field name="@security_tabs" type="Tabs" action="start" tabset="sourcerer-security" tab="sourcerer-security-tags"/>
+        <field name="@tab_tags" type="Tabs" tabset="sourcerer-security" tab="sourcerer-security-tags" label="RL_PROCESS_TAGS"/>
+        <field name="remove_unprocessed_tags" type="Radio" default="1" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_REMOVE_UNPROCESSED_TAGS" description="RL_REMOVE_UNPROCESSED_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="@block_tags_articles" type="Block" start="1" label="RL_ARTICLES" description="RL_POLICY_ARTICLES_DESC"/>
+        <field name="tags_articles" type="Radio" default="2" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_PROCESS_TAGS" description="RL_SOURCE_POLICY_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+        </field>
+        <field name="@trust_tags_articles" type="ShowOn" value="tags_articles:2"/>
+        <field name="tags_usergroups" type="UserGroups" treeselect="false" default="-1" multiple="1" show_all="1" label="RL_USER_GROUPS" description="RL_TRUSTED_ARTICLE_GROUPS_DESC"/>
+        <field name="@trust_end_tags_articles" type="ShowOn"/>
+        <field name="@end_tags_articles" type="Block" end="1"/>
+        <field name="@block_tags_components" type="Block" start="1" label="RL_COMPONENTS" description="RL_POLICY_COMPONENTS_DESC"/>
+        <field name="tags_components" type="Radio" default="1" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_PROCESS_TAGS" description="RL_SOURCE_POLICY_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+        </field>
+        <field name="@trust_tags_components" type="ShowOn" value="tags_components:2"/>
+        <field name="tags_components_trust_default" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_TRUST_BY_DEFAULT" description="RL_COMPONENT_TRUST_DEFAULT_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="tags_components_whitelist" type="Components" default="" multiple="true" admin="false" label="RL_WHITELIST" description="RL_COMPONENT_WHITELIST_DESC" showon="tags_components_trust_default:0"/>
+        <field name="tags_components_blacklist" type="Components" default="" multiple="true" admin="false" label="RL_BLACKLIST" description="RL_COMPONENT_BLACKLIST_DESC" showon="tags_components_trust_default:1"/>
+        <field name="@trust_end_tags_components" type="ShowOn"/>
+        <field name="@end_tags_components" type="Block" end="1"/>
+        <field name="@block_tags_other" type="Block" start="1" label="RL_OTHER_AREAS" description="RL_POLICY_OTHER_AREAS_DESC"/>
+        <field name="tags_other" type="Radio" default="1" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_PROCESS_TAGS" description="RL_SOURCE_POLICY_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+        </field>
+        <field name="@trust_tags_other" type="ShowOn" value="tags_other:2"/>
+        <field name="tags_modules_trust_default" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_TRUST_BY_DEFAULT" description="RL_MODULE_TRUST_DEFAULT_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="tags_modules_whitelist" type="ModuleTypes" default="mod_custom,mod_footer,mod_languages,mod_menu,mod_stats,mod_syndicate,mod_wrapper" multiple="true" admin="false" label="RL_WHITELIST" description="RL_MODULE_WHITELIST_DESC" showon="tags_modules_trust_default:0"/>
+        <field name="tags_modules_blacklist" type="ModuleTypes" default="" multiple="true" admin="false" label="RL_BLACKLIST" description="RL_MODULE_BLACKLIST_DESC" showon="tags_modules_trust_default:1"/>
+        <field name="@trust_end_tags_other" type="ShowOn"/>
+        <field name="@end_tags_other" type="Block" end="1"/>
+        <field name="@block_request" type="Block" start="1" label="SRC_TRUSTED_REQUEST_USER_GROUPS" description="SRC_REQUEST_SECURITY_LEVEL_DESC"/>
+        <field name="request_security_level" type="UserGroups" treeselect="false" default="Super Users" multiple="1" show_all="1" label="RL_USER_GROUPS"/>
+        <field name="@end_request" type="Block" end="1"/>
+        <field name="@block_forbidden_tags" type="Block" start="1" label="SRC_ADDITIONAL_RESTRICTIONS"/>
+        <field name="forbidden_tags" type="Textareaplus" width="400" height="80" default="" label="SRC_FORBIDDEN_HTML_TAGS" description="SRC_FORBIDDEN_HTML_TAGS_DESC"/>
+        <field name="@end_forbidden_tags" type="Block" end="1"/>
+        <field name="@tab_end_tags" type="Tabs" action="endtab"/>
+        <field name="@tab_css" type="Tabs" tabset="sourcerer-security" tab="sourcerer-security-css" label="RL_CSS"/>
+        <field name="css_enable" type="Radio" default="1" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_CSS_TAGS" description="SRC_GLOBAL_CODE_ENABLE_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="@enabled_css" type="ShowOn" value="css_enable:1"/>
+        <field name="@block_css_articles" type="Block" start="1" label="RL_ARTICLES" description="RL_POLICY_ARTICLES_DESC"/>
+        <field name="css_articles" type="Radio" default="2" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_CSS_TAGS" description="%1$s&lt;br&gt;%2$s,RL_SOURCE_POLICY_DESC,SRC_SAME_AS_PROCESS_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+          <option value="-1" class="btn btn-outline-info">SRC_SAME_AS_PROCESS_TAGS</option>
+        </field>
+        <field name="@trust_css_articles" type="ShowOn" value="css_articles:2"/>
+        <field name="css_usergroups" type="UserGroups" treeselect="false" default="-1" multiple="1" show_all="1" label="RL_USER_GROUPS" description="RL_TRUSTED_ARTICLE_GROUPS_DESC"/>
+        <field name="@trust_end_css_articles" type="ShowOn"/>
+        <field name="@end_css_articles" type="Block" end="1"/>
+        <field name="@block_css_components" type="Block" start="1" label="RL_COMPONENTS" description="RL_POLICY_COMPONENTS_DESC"/>
+        <field name="css_components" type="Radio" default="2" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_CSS_TAGS" description="%1$s&lt;br&gt;%2$s,RL_SOURCE_POLICY_DESC,SRC_SAME_AS_PROCESS_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+          <option value="-1" class="btn btn-outline-info">SRC_SAME_AS_PROCESS_TAGS</option>
+        </field>
+        <field name="@trust_css_components" type="ShowOn" value="css_components:2"/>
+        <field name="css_components_trust_default" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_TRUST_BY_DEFAULT" description="RL_COMPONENT_TRUST_DEFAULT_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="css_components_whitelist" type="Components" default="" multiple="true" admin="false" label="RL_WHITELIST" description="RL_COMPONENT_WHITELIST_DESC" showon="css_components_trust_default:0"/>
+        <field name="css_components_blacklist" type="Components" default="" multiple="true" admin="false" label="RL_BLACKLIST" description="RL_COMPONENT_BLACKLIST_DESC" showon="css_components_trust_default:1"/>
+        <field name="@trust_end_css_components" type="ShowOn"/>
+        <field name="@end_css_components" type="Block" end="1"/>
+        <field name="@block_css_other" type="Block" start="1" label="RL_OTHER_AREAS" description="RL_POLICY_OTHER_AREAS_DESC"/>
+        <field name="css_other" type="Radio" default="2" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_CSS_TAGS" description="%1$s&lt;br&gt;%2$s,RL_SOURCE_POLICY_DESC,SRC_SAME_AS_PROCESS_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+          <option value="-1" class="btn btn-outline-info">SRC_SAME_AS_PROCESS_TAGS</option>
+        </field>
+        <field name="@trust_css_other" type="ShowOn" value="css_other:2"/>
+        <field name="css_modules_trust_default" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_TRUST_BY_DEFAULT" description="RL_MODULE_TRUST_DEFAULT_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="css_modules_whitelist" type="ModuleTypes" default="mod_custom,mod_footer,mod_languages,mod_menu,mod_stats,mod_syndicate,mod_wrapper" multiple="true" admin="false" label="RL_WHITELIST" description="RL_MODULE_WHITELIST_DESC" showon="css_modules_trust_default:0"/>
+        <field name="css_modules_blacklist" type="ModuleTypes" default="" multiple="true" admin="false" label="RL_BLACKLIST" description="RL_MODULE_BLACKLIST_DESC" showon="css_modules_trust_default:1"/>
+        <field name="@trust_end_css_other" type="ShowOn"/>
+        <field name="@end_css_other" type="Block" end="1"/>
+        <field name="@enabled_end_css" type="ShowOn"/>
+        <field name="@tab_end_css" type="Tabs" action="endtab"/>
+        <field name="@tab_js" type="Tabs" tabset="sourcerer-security" tab="sourcerer-security-js" label="RL_JAVASCRIPT"/>
+        <field name="js_enable" type="Radio" default="1" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_JAVASCRIPT_TAGS" description="SRC_GLOBAL_CODE_ENABLE_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="@enabled_js" type="ShowOn" value="js_enable:1"/>
+        <field name="@block_js_articles" type="Block" start="1" label="RL_ARTICLES" description="RL_POLICY_ARTICLES_DESC"/>
+        <field name="js_articles" type="Radio" default="2" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_JAVASCRIPT_TAGS" description="%1$s&lt;br&gt;%2$s,RL_SOURCE_POLICY_DESC,SRC_SAME_AS_PROCESS_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+          <option value="-1" class="btn btn-outline-info">SRC_SAME_AS_PROCESS_TAGS</option>
+        </field>
+        <field name="@trust_js_articles" type="ShowOn" value="js_articles:2"/>
+        <field name="js_usergroups" type="UserGroups" treeselect="false" default="Super Users" multiple="1" show_all="1" label="RL_USER_GROUPS" description="RL_TRUSTED_ARTICLE_GROUPS_DESC"/>
+        <field name="@trust_end_js_articles" type="ShowOn"/>
+        <field name="@end_js_articles" type="Block" end="1"/>
+        <field name="@block_js_components" type="Block" start="1" label="RL_COMPONENTS" description="RL_POLICY_COMPONENTS_DESC"/>
+        <field name="js_components" type="Radio" default="2" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_JAVASCRIPT_TAGS" description="%1$s&lt;br&gt;%2$s,RL_SOURCE_POLICY_DESC,SRC_SAME_AS_PROCESS_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+          <option value="-1" class="btn btn-outline-info">SRC_SAME_AS_PROCESS_TAGS</option>
+        </field>
+        <field name="@trust_js_components" type="ShowOn" value="js_components:2"/>
+        <field name="js_components_trust_default" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_TRUST_BY_DEFAULT" description="RL_COMPONENT_TRUST_DEFAULT_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="js_components_whitelist" type="Components" default="" multiple="true" admin="false" label="RL_WHITELIST" description="RL_COMPONENT_WHITELIST_DESC" showon="js_components_trust_default:0"/>
+        <field name="js_components_blacklist" type="Components" default="" multiple="true" admin="false" label="RL_BLACKLIST" description="RL_COMPONENT_BLACKLIST_DESC" showon="js_components_trust_default:1"/>
+        <field name="@trust_end_js_components" type="ShowOn"/>
+        <field name="@end_js_components" type="Block" end="1"/>
+        <field name="@block_js_other" type="Block" start="1" label="RL_OTHER_AREAS" description="RL_POLICY_OTHER_AREAS_DESC"/>
+        <field name="js_other" type="Radio" default="2" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_JAVASCRIPT_TAGS" description="%1$s&lt;br&gt;%2$s,RL_SOURCE_POLICY_DESC,SRC_SAME_AS_PROCESS_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+          <option value="-1" class="btn btn-outline-info">SRC_SAME_AS_PROCESS_TAGS</option>
+        </field>
+        <field name="@trust_js_other" type="ShowOn" value="js_other:2"/>
+        <field name="js_modules_trust_default" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_TRUST_BY_DEFAULT" description="RL_MODULE_TRUST_DEFAULT_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="js_modules_whitelist" type="ModuleTypes" default="mod_custom,mod_footer,mod_languages,mod_menu,mod_stats,mod_syndicate,mod_wrapper" multiple="true" admin="false" label="RL_WHITELIST" description="RL_MODULE_WHITELIST_DESC" showon="js_modules_trust_default:0"/>
+        <field name="js_modules_blacklist" type="ModuleTypes" default="" multiple="true" admin="false" label="RL_BLACKLIST" description="RL_MODULE_BLACKLIST_DESC" showon="js_modules_trust_default:1"/>
+        <field name="@trust_end_js_other" type="ShowOn"/>
+        <field name="@end_js_other" type="Block" end="1"/>
+        <field name="@enabled_end_js" type="ShowOn"/>
+        <field name="@tab_end_js" type="Tabs" action="endtab"/>
+        <field name="@tab_php" type="Tabs" tabset="sourcerer-security" tab="sourcerer-security-php" label="RL_PHP_CODE"/>
+        <field name="php_enable" type="Radio" default="1" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_PHP_TAGS" description="SRC_GLOBAL_CODE_ENABLE_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="@enabled_php" type="ShowOn" value="php_enable:1"/>
+        <field name="@block_php_articles" type="Block" start="1" label="RL_ARTICLES" description="RL_POLICY_ARTICLES_DESC"/>
+        <field name="php_articles" type="Radio" default="2" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_PHP_TAGS" description="%1$s&lt;br&gt;%2$s,RL_SOURCE_POLICY_DESC,SRC_SAME_AS_PROCESS_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+          <option value="-1" class="btn btn-outline-info">SRC_SAME_AS_PROCESS_TAGS</option>
+        </field>
+        <field name="@trust_php_articles" type="ShowOn" value="php_articles:2"/>
+        <field name="php_usergroups" type="UserGroups" treeselect="false" default="Super Users" multiple="1" show_all="1" label="RL_USER_GROUPS" description="RL_TRUSTED_ARTICLE_GROUPS_DESC"/>
+        <field name="@trust_end_php_articles" type="ShowOn"/>
+        <field name="@end_php_articles" type="Block" end="1"/>
+        <field name="@block_php_components" type="Block" start="1" label="RL_COMPONENTS" description="RL_POLICY_COMPONENTS_DESC"/>
+        <field name="php_components" type="Radio" default="2" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_PHP_TAGS" description="%1$s&lt;br&gt;%2$s,RL_SOURCE_POLICY_DESC,SRC_SAME_AS_PROCESS_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+          <option value="-1" class="btn btn-outline-info">SRC_SAME_AS_PROCESS_TAGS</option>
+        </field>
+        <field name="@trust_php_components" type="ShowOn" value="php_components:2"/>
+        <field name="php_components_trust_default" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_TRUST_BY_DEFAULT" description="RL_COMPONENT_TRUST_DEFAULT_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="php_components_whitelist" type="Components" default="" multiple="true" admin="false" label="RL_WHITELIST" description="RL_COMPONENT_WHITELIST_DESC" showon="php_components_trust_default:0"/>
+        <field name="php_components_blacklist" type="Components" default="" multiple="true" admin="false" label="RL_BLACKLIST" description="RL_COMPONENT_BLACKLIST_DESC" showon="php_components_trust_default:1"/>
+        <field name="@trust_end_php_components" type="ShowOn"/>
+        <field name="@end_php_components" type="Block" end="1"/>
+        <field name="@block_php_other" type="Block" start="1" label="RL_OTHER_AREAS" description="RL_POLICY_OTHER_AREAS_DESC"/>
+        <field name="php_other" type="Radio" default="2" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ALLOW_PHP_TAGS" description="%1$s&lt;br&gt;%2$s,RL_SOURCE_POLICY_DESC,SRC_SAME_AS_PROCESS_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+          <option value="2" class="btn btn-outline-info">RL_ONLY_TRUSTED</option>
+          <option value="-1" class="btn btn-outline-info">SRC_SAME_AS_PROCESS_TAGS</option>
+        </field>
+        <field name="@trust_php_other" type="ShowOn" value="php_other:2"/>
+        <field name="php_modules_trust_default" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_TRUST_BY_DEFAULT" description="RL_MODULE_TRUST_DEFAULT_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="php_modules_whitelist" type="ModuleTypes" default="mod_custom,mod_footer,mod_languages,mod_menu,mod_stats,mod_syndicate,mod_wrapper" multiple="true" admin="false" label="RL_WHITELIST" description="RL_MODULE_WHITELIST_DESC" showon="php_modules_trust_default:0"/>
+        <field name="php_modules_blacklist" type="ModuleTypes" default="" multiple="true" admin="false" label="RL_BLACKLIST" description="RL_MODULE_BLACKLIST_DESC" showon="php_modules_trust_default:1"/>
+        <field name="@trust_end_php_other" type="ShowOn"/>
+        <field name="@end_php_other" type="Block" end="1"/>
+        <field name="@block_additional" type="Block" start="1" label="SRC_ADDITIONAL_RESTRICTIONS" description="SRC_ADDITIONAL_RESTRICTIONS_DESC"/>
+        <field name="forbidden_php" type="Textarea" rows="3" cols="40" default="chgrp, chmod, chown, copy, dl, escapeshellarg, escapeshellcmd, exec, file_put_contents, fopen, fprintf, fputs, ftruncate, fwrite, link, mkdir, move_uploaded_file, passthru, popen, proc_close, proc_open, rename, rmdir, shell_exec, stream_copy_to_stream, symlink, system, tempnam, tmpfile, touch, unlink" label="SRC_FORBIDDEN_PHP_FUNCTIONS" description="SRC_FORBIDDEN_PHP_FUNCTIONS_DESC"/>
+        <field name="@wizard" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_SHOW_WIZARD">
+          <option value="0">JNO</option>
+          <option value="" class="btn btn-outline-success">JYES</option>
+        </field>
+        <field name="@note__wizard" type="Note" class="text-center" text="&lt;img src=&quot;../media/sourcerer/images/wizard.gif?20230311&quot; alt=&quot;&quot; width=&quot;160&quot; height=&quot;160&quot; /&gt;&lt;h4&gt;The Day of the Sourcerer&lt;/h4&gt;&lt;p&gt;He stands up and he wakes,&lt;br /&gt;He adds and he takes,&lt;br /&gt;He mixes and he shakes,&lt;br /&gt;He explodes and he bakes,&lt;br /&gt;But he makes no mistakes!&lt;/p&gt;" showon="@wizard:"/>
+        <field name="@end_additional" type="Block" end="1"/>
+        <field name="@enabled_end_php" type="ShowOn"/>
+        <field name="@tab_end_php" type="Tabs" action="endtab"/>
+        <field name="@security_tabs_end" type="Tabs" action="end"/>
+      </fieldset>
+      <fieldset name="RL_SETTINGS_EDITOR_BUTTON">
+        <field name="button_text" type="Text" default="Code" label="RL_BUTTON_TEXT" description="RL_BUTTON_TEXT_DESC"/>
+        <field name="enable_frontend" type="Radio" default="1" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_ENABLE_IN_FRONTEND" description="RL_ENABLE_IN_FRONTEND_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="color_code" type="Radio" default="1" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_COLOR_CODE" description="SRC_COLOR_CODE_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+      </fieldset>
+      <fieldset name="RL_TAG_SYNTAX">
+        <field name="syntax_word" type="Text" size="20" default="source" label="SRC_SYNTAX_WORD" description="SRC_SYNTAX_WORD_DESC"/>
+        <field name="tag_characters" type="List" class="font-monospace w-auto" default="{.}" label="RL_TAG_CHARACTERS" description="RL_TAG_CHARACTERS_DESC">
+          <option value="{.}">{...}</option>
+          <option value="[.]">[...]</option>
+          <option value="«.»">«...»</option>
+          <option value="{{.}}">{{...}}</option>
+          <option value="[[.]]">[[...]]</option>
+          <option value="[:.:]">[:...:]</option>
+          <option value="[%.%]">[%...%]</option>
+        </field>
+      </fieldset>
+      <fieldset name="advanced">
+        <field name="@load_language_config" type="LoadLanguage" extension="com_config"/>
+        <field name="trim" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_STRIP_SURROUNDING_TAGS" description="RL_STRIP_SURROUNDING_TAGS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="enable_in_head" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_ENABLE_IN_HEAD" description="SRC_ENABLE_IN_HEAD_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="remove_from_search" type="Radio" default="0" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_REMOVE_FROM_SEARCH" description="SRC_REMOVE_FROM_SEARCH_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="handle_php_errors" type="Radio" default="1" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="SRC_HANDLE_PHP_ERRORS" description="SRC_HANDLE_PHP_ERRORS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+        <field name="tmp_path" type="Text" default="" label="SRC_TEMP_PATH" description="SRC_TEMP_PATH_DESC" hint="JDEFAULT"/>
+        <field name="place_comments" type="Radio" default="1" class="btn-group rl-btn-group btn-group-md btn-group-yesno" label="RL_PLACE_HTML_COMMENTS" description="RL_PLACE_HTML_COMMENTS_DESC">
+          <option value="0">JNO</option>
+          <option value="1">JYES</option>
+        </field>
+      </fieldset>
+    </fields>
+  </config>
+</extension>

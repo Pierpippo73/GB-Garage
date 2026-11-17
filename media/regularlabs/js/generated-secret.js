@@ -1,0 +1,215 @@
+/**
+ * @package         Regular Labs Library
+ * @version         26.10.25669
+ * 
+ * @author          Peter van Westen <info@regularlabs.com>
+ * @link            https://regularlabs.com
+ * @copyright       Copyright © 2026 Regular Labs All Rights Reserved
+ * @license         GNU General Public License version 2 or later
+ */
+
+"use strict";
+
+(function(window, document) {
+    'use strict';
+
+    const consonants = 'bcdfghjklmnprstvwxyz';
+    const vowels = 'aeiou';
+    const minimumEntropyBits = 128;
+
+    function getByteCount(wrapper) {
+        return clamp(parseInt(wrapper.dataset.bytes, 10) || 16, 8, 64);
+    }
+
+    function getRandomBytes(length) {
+        const bytes = new Uint8Array(length);
+
+        window.crypto.getRandomValues(bytes);
+
+        return bytes;
+    }
+
+    function generateBase64Url(wrapper) {
+        const bytes = getRandomBytes(getByteCount(wrapper));
+        let value = '';
+
+        bytes.forEach(byte => {
+            value += String.fromCharCode(byte);
+        });
+
+        return window.btoa(value)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/g, '');
+    }
+
+    function generateHex(wrapper) {
+        return Array.from(getRandomBytes(getByteCount(wrapper)))
+            .map(byte => byte.toString(16).padStart(2, '0'))
+            .join('');
+    }
+
+    function getRandomIndex(length) {
+        const maximum = 0x100000000;
+        const limit = maximum - (maximum % length);
+        const values = new Uint32Array(1);
+
+        do {
+            window.crypto.getRandomValues(values);
+        } while (values[0] >= limit);
+
+        return values[0] % length;
+    }
+
+    function getRandomCharacter(characters) {
+        return characters[getRandomIndex(characters.length)];
+    }
+
+    function getWordLength(wrapper, wordCount) {
+        const configuredLength = parseInt(wrapper.dataset.wordLength, 10) || 0;
+
+        if (configuredLength > 0) {
+            return clamp(configuredLength, 1, 64);
+        }
+
+        let entropy = 0;
+        let length = 0;
+
+        while (entropy * wordCount < minimumEntropyBits) {
+            entropy += Math.log2(length % 2 === 0 ? consonants.length : vowels.length);
+            length++;
+        }
+
+        return length;
+    }
+
+    function generateWord(length) {
+        let word = '';
+
+        for (let index = 0; index < length; index++) {
+            word += getRandomCharacter(index % 2 === 0 ? consonants : vowels);
+        }
+
+        return word;
+    }
+
+    function generateWords(wrapper) {
+        const wordCount = clamp(parseInt(wrapper.dataset.wordCount, 10) || 8, 1, 16);
+        const wordLength = getWordLength(wrapper, wordCount);
+        const separator = wrapper.dataset.separator || '-';
+        const words = [];
+
+        for (let index = 0; index < wordCount; index++) {
+            words.push(generateWord(wordLength));
+        }
+
+        return words.join(separator);
+    }
+
+    function generate(wrapper) {
+        switch (wrapper.dataset.format) {
+            case 'base64url':
+                return generateBase64Url(wrapper);
+
+            case 'words':
+                return generateWords(wrapper);
+
+            default:
+                return generateHex(wrapper);
+        }
+    }
+
+    function updatePreviews(wrapper) {
+        const input = wrapper.querySelector('[data-rl-generated-secret-input]');
+        const previewName = wrapper.dataset.preview;
+
+        if (!input || !previewName) {
+            return;
+        }
+
+        document.querySelectorAll('[data-rl-generated-secret-preview]').forEach(preview => {
+            if (preview.dataset.rlGeneratedSecretPreview !== previewName) {
+                return;
+            }
+
+            if (preview.dataset.rlGeneratedSecretFallback === undefined) {
+                preview.dataset.rlGeneratedSecretFallback = preview.textContent;
+            }
+
+            preview.textContent = input.value || preview.dataset.rlGeneratedSecretFallback;
+        });
+    }
+
+    function setGeneratedValue(wrapper, dispatchChange = true) {
+        const input = wrapper.querySelector('[data-rl-generated-secret-input]');
+
+        if (!input || input.disabled || input.readOnly) {
+            return;
+        }
+
+        input.value = generate(wrapper);
+
+        if (!dispatchChange) {
+            return;
+        }
+
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        input.dispatchEvent(new Event('change', {bubbles: true}));
+    }
+
+    function initialize(root = document) {
+        root.querySelectorAll('[data-rl-generated-secret]').forEach(wrapper => {
+            const input = wrapper.querySelector('[data-rl-generated-secret-input]');
+
+            if (wrapper.dataset.generateOnEmpty === 'true' && input && !input.value) {
+                setGeneratedValue(wrapper, false);
+            }
+
+            updatePreviews(wrapper);
+        });
+    }
+
+    function clamp(value, minimum, maximum) {
+        return Math.max(minimum, Math.min(maximum, value));
+    }
+
+    document.addEventListener('click', event => {
+        if (!(event.target instanceof Element)) {
+            return;
+        }
+
+        const button = event.target.closest('[data-rl-generate-secret]');
+
+        if (!button || button.disabled) {
+            return;
+        }
+
+        const wrapper = button.closest('[data-rl-generated-secret]');
+
+        if (wrapper) {
+            setGeneratedValue(wrapper);
+        }
+    });
+
+    document.addEventListener('input', event => {
+        if (!(event.target instanceof Element) || !event.target.matches('[data-rl-generated-secret-input]')) {
+            return;
+        }
+
+        const wrapper = event.target.closest('[data-rl-generated-secret]');
+
+        if (wrapper) {
+            updatePreviews(wrapper);
+        }
+    });
+
+    window.RegularLabs = window.RegularLabs || {};
+    window.RegularLabs.GeneratedSecret = {generate, initialize};
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => initialize(), {once: true});
+        return;
+    }
+
+    initialize();
+})(window, document);

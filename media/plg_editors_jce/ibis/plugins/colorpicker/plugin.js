@@ -1,0 +1,358 @@
+/* jce - 3.0.5 | 2026-11-11 | https://www.joomlacontenteditor.net | Source: https://github.com/widgetfactory/jce | Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+!function() {
+    "use strict";
+    var hexColors = [ "#000000", "#000033", "#000066", "#000099", "#0000cc", "#0000ff", "#330000", "#330033", "#330066", "#330099", "#3300cc", "#3300ff", "#660000", "#660033", "#660066", "#660099", "#6600cc", "#6600ff", "#990000", "#990033", "#990066", "#990099", "#9900cc", "#9900ff", "#cc0000", "#cc0033", "#cc0066", "#cc0099", "#cc00cc", "#cc00ff", "#ff0000", "#ff0033", "#ff0066", "#ff0099", "#ff00cc", "#ff00ff", "#003300", "#003333", "#003366", "#003399", "#0033cc", "#0033ff", "#333300", "#333333", "#333366", "#333399", "#3333cc", "#3333ff", "#663300", "#663333", "#663366", "#663399", "#6633cc", "#6633ff", "#993300", "#993333", "#993366", "#993399", "#9933cc", "#9933ff", "#cc3300", "#cc3333", "#cc3366", "#cc3399", "#cc33cc", "#cc33ff", "#ff3300", "#ff3333", "#ff3366", "#ff3399", "#ff33cc", "#ff33ff", "#006600", "#006633", "#006666", "#006699", "#0066cc", "#0066ff", "#336600", "#336633", "#336666", "#336699", "#3366cc", "#3366ff", "#666600", "#666633", "#666666", "#666699", "#6666cc", "#6666ff", "#996600", "#996633", "#996666", "#996699", "#9966cc", "#9966ff", "#cc6600", "#cc6633", "#cc6666", "#cc6699", "#cc66cc", "#cc66ff", "#ff6600", "#ff6633", "#ff6666", "#ff6699", "#ff66cc", "#ff66ff", "#009900", "#009933", "#009966", "#009999", "#0099cc", "#0099ff", "#339900", "#339933", "#339966", "#339999", "#3399cc", "#3399ff", "#669900", "#669933", "#669966", "#669999", "#6699cc", "#6699ff", "#999900", "#999933", "#999966", "#999999", "#9999cc", "#9999ff", "#cc9900", "#cc9933", "#cc9966", "#cc9999", "#cc99cc", "#cc99ff", "#ff9900", "#ff9933", "#ff9966", "#ff9999", "#ff99cc", "#ff99ff", "#00cc00", "#00cc33", "#00cc66", "#00cc99", "#00cccc", "#00ccff", "#33cc00", "#33cc33", "#33cc66", "#33cc99", "#33cccc", "#33ccff", "#66cc00", "#66cc33", "#66cc66", "#66cc99", "#66cccc", "#66ccff", "#99cc00", "#99cc33", "#99cc66", "#99cc99", "#99cccc", "#99ccff", "#cccc00", "#cccc33", "#cccc66", "#cccc99", "#cccccc", "#ccccff", "#ffcc00", "#ffcc33", "#ffcc66", "#ffcc99", "#ffcccc", "#ffccff", "#00ff00", "#00ff33", "#00ff66", "#00ff99", "#00ffcc", "#00ffff", "#33ff00", "#33ff33", "#33ff66", "#33ff99", "#33ffcc", "#33ffff", "#66ff00", "#66ff33", "#66ff66", "#66ff99", "#66ffcc", "#66ffff", "#99ff00", "#99ff33", "#99ff66", "#99ff99", "#99ffcc", "#99ffff", "#ccff00", "#ccff33", "#ccff66", "#ccff99", "#ccffcc", "#ccffff", "#ffff00", "#ffff33", "#ffff66", "#ffff99", "#ffffcc", "#ffffff" ], namedColors = {
+        "#F0F8FF": "AliceBlue",
+        "#FAEBD7": "AntiqueWhite",
+        "#7FFFD4": "Aquamarine",
+        "#F0FFFF": "Azure",
+        "#F5F5DC": "Beige",
+        "#FFE4C4": "Bisque",
+        "#000000": "Black",
+        "#FFEBCD": "BlanchedAlmond",
+        "#0000FF": "Blue",
+        "#8A2BE2": "BlueViolet",
+        "#A52A2A": "Brown",
+        "#DEB887": "BurlyWood",
+        "#5F9EA0": "CadetBlue",
+        "#7FFF00": "Chartreuse",
+        "#D2691E": "Chocolate",
+        "#FF7F50": "Coral",
+        "#6495ED": "CornflowerBlue",
+        "#FFF8DC": "Cornsilk",
+        "#DC143C": "Crimson",
+        "#00008B": "DarkBlue",
+        "#008B8B": "DarkCyan",
+        "#B8860B": "DarkGoldenRod",
+        "#A9A9A9": "DarkGray",
+        "#006400": "DarkGreen",
+        "#BDB76B": "DarkKhaki",
+        "#8B008B": "DarkMagenta",
+        "#556B2F": "DarkOliveGreen",
+        "#FF8C00": "Darkorange",
+        "#9932CC": "DarkOrchid",
+        "#8B0000": "DarkRed",
+        "#E9967A": "DarkSalmon",
+        "#8FBC8F": "DarkSeaGreen",
+        "#483D8B": "DarkSlateBlue",
+        "#2F4F4F": "DarkSlateGrey",
+        "#00CED1": "DarkTurquoise",
+        "#9400D3": "DarkViolet",
+        "#FF1493": "DeepPink",
+        "#00BFFF": "DeepSkyBlue",
+        "#696969": "DimGrey",
+        "#1E90FF": "DodgerBlue",
+        "#B22222": "FireBrick",
+        "#FFFAF0": "FloralWhite",
+        "#228B22": "ForestGreen",
+        "#DCDCDC": "Gainsboro",
+        "#F8F8FF": "GhostWhite",
+        "#FFD700": "Gold",
+        "#DAA520": "GoldenRod",
+        "#808080": "Grey",
+        "#008000": "Green",
+        "#ADFF2F": "GreenYellow",
+        "#F0FFF0": "HoneyDew",
+        "#FF69B4": "HotPink",
+        "#CD5C5C": "IndianRed",
+        "#4B0082": "Indigo",
+        "#FFFFF0": "Ivory",
+        "#F0E68C": "Khaki",
+        "#E6E6FA": "Lavender",
+        "#FFF0F5": "LavenderBlush",
+        "#7CFC00": "LawnGreen",
+        "#FFFACD": "LemonChiffon",
+        "#ADD8E6": "LightBlue",
+        "#F08080": "LightCoral",
+        "#E0FFFF": "LightCyan",
+        "#FAFAD2": "LightGoldenRodYellow",
+        "#D3D3D3": "LightGrey",
+        "#90EE90": "LightGreen",
+        "#FFB6C1": "LightPink",
+        "#FFA07A": "LightSalmon",
+        "#20B2AA": "LightSeaGreen",
+        "#87CEFA": "LightSkyBlue",
+        "#778899": "LightSlateGrey",
+        "#B0C4DE": "LightSteelBlue",
+        "#FFFFE0": "LightYellow",
+        "#00FF00": "Lime",
+        "#32CD32": "LimeGreen",
+        "#FAF0E6": "Linen",
+        "#FF00FF": "Magenta",
+        "#800000": "Maroon",
+        "#66CDAA": "MediumAquaMarine",
+        "#0000CD": "MediumBlue",
+        "#BA55D3": "MediumOrchid",
+        "#9370D8": "MediumPurple",
+        "#3CB371": "MediumSeaGreen",
+        "#7B68EE": "MediumSlateBlue",
+        "#00FA9A": "MediumSpringGreen",
+        "#48D1CC": "MediumTurquoise",
+        "#C71585": "MediumVioletRed",
+        "#191970": "MidnightBlue",
+        "#F5FFFA": "MintCream",
+        "#FFE4E1": "MistyRose",
+        "#FFE4B5": "Moccasin",
+        "#FFDEAD": "NavajoWhite",
+        "#000080": "Navy",
+        "#FDF5E6": "OldLace",
+        "#808000": "Olive",
+        "#6B8E23": "OliveDrab",
+        "#FFA500": "Orange",
+        "#FF4500": "OrangeRed",
+        "#DA70D6": "Orchid",
+        "#EEE8AA": "PaleGoldenRod",
+        "#98FB98": "PaleGreen",
+        "#AFEEEE": "PaleTurquoise",
+        "#D87093": "PaleVioletRed",
+        "#FFEFD5": "PapayaWhip",
+        "#FFDAB9": "PeachPuff",
+        "#CD853F": "Peru",
+        "#FFC0CB": "Pink",
+        "#DDA0DD": "Plum",
+        "#B0E0E6": "PowderBlue",
+        "#800080": "Purple",
+        "#FF0000": "Red",
+        "#BC8F8F": "RosyBrown",
+        "#4169E1": "RoyalBlue",
+        "#8B4513": "SaddleBrown",
+        "#FA8072": "Salmon",
+        "#F4A460": "SandyBrown",
+        "#2E8B57": "SeaGreen",
+        "#FFF5EE": "SeaShell",
+        "#A0522D": "Sienna",
+        "#C0C0C0": "Silver",
+        "#87CEEB": "SkyBlue",
+        "#6A5ACD": "SlateBlue",
+        "#708090": "SlateGrey",
+        "#FFFAFA": "Snow",
+        "#00FF7F": "SpringGreen",
+        "#4682B4": "SteelBlue",
+        "#D2B48C": "Tan",
+        "#008080": "Teal",
+        "#D8BFD8": "Thistle",
+        "#FF6347": "Tomato",
+        "#40E0D0": "Turquoise",
+        "#EE82EE": "Violet",
+        "#F5DEB3": "Wheat",
+        "#FFFFFF": "White",
+        "#F5F5F5": "WhiteSmoke",
+        "#FFFF00": "Yellow",
+        "#9ACD32": "YellowGreen"
+    }, each = ibis.each, DOM = ibis.DOM, Color = ibis.util.Color;
+    function getStylesheetColors(ed) {
+        var hex, rgb, colorMap = {}, colors = [], clr = "", hexRe = /#[0-9a-f]{3,6}/gi, rgbRe = new RegExp("rgb\\s*\\(\\s*([0-9]+).*,\\s*([0-9]+).*,\\s*([0-9]+).*\\)", "gi");
+        function parseCSS(s) {
+            each(s.cssRules || s.rules, function(r) {
+                switch (r.type || 1) {
+                  case 1:
+                    var css = r.cssText || r.style.cssText;
+                    css && (hex = css.match(hexRe), (rgb = css.match(rgbRe)) && (clr = new Color(rgb[0]).toHex()), 
+                    hex && (clr = new Color(hex[0]).toHex()), css = clr) && (colorMap[css] = css);
+                    break;
+
+                  case 3:
+                    r.href && -1 !== r.href.indexOf("://") || parseCSS(r.styleSheet);
+                }
+            });
+        }
+        try {
+            each(ed.getDoc().styleSheets, function(styleSheet) {
+                parseCSS(styleSheet);
+            });
+        } catch (e) {}
+        return each(colorMap, function(value) {
+            colors.push(value);
+        }), colors;
+    }
+    function setHexColor(elm, val) {
+        elm.value(val.replace("#", "")), DOM.get(elm.id + "_description").style.backgroundColor = val;
+    }
+    function showDialog(ed, callback, value) {
+        var sheetList, customList, cm = ed.controlManager, rgbLayout = cm.createLayout("colorpicker_rgb_layout"), rgbForm = cm.createForm("colorpicker_rgb_form"), colorPickerCtrl = new ibis.ui.ColorPicker("colorpicker_picker", {}, ed), rCtrl = (colorPickerCtrl.onChange = new ibis.util.Dispatcher(colorPickerCtrl), 
+        rgbLayout.add(colorPickerCtrl), cm.createTextBox("colorpicker_r", {
+            name: "r",
+            label: "R",
+            subtype: "number",
+            size: 5,
+            min: 0,
+            max: 255,
+            value: "0"
+        })), gCtrl = (rgbForm.add(rCtrl), cm.createTextBox("colorpicker_g", {
+            name: "g",
+            label: "G",
+            subtype: "number",
+            size: 5,
+            min: 0,
+            max: 255,
+            value: "0"
+        })), bCtrl = (rgbForm.add(gCtrl), cm.createTextBox("colorpicker_b", {
+            name: "b",
+            label: "B",
+            subtype: "number",
+            size: 5,
+            min: 0,
+            max: 255,
+            value: "0"
+        })), hexCtrl = (rgbForm.add(bCtrl), cm.createTextBox("colorpicker_hex", {
+            name: "hex",
+            label: "#",
+            description: "Color Preview"
+        })), hexForm = cm.createForm("colorpicker_hex_form", {
+            class: "mceColorPickerHex"
+        }), webForm = (hexForm.add(hexCtrl), cm.createForm("colorpicker_web_form")), webColors = [], namedForm = (each(hexColors, function(c) {
+            webColors.push({
+                value: c,
+                text: c
+            });
+        }), webForm.add(new ibis.ui.ColorGrid("colorpicker_web_grid", {
+            colors: webColors,
+            onclick: function(val) {
+                callback(val), win.close();
+            },
+            onmouseover: function(val) {
+                setHexColor(hexCtrl, val);
+            }
+        }, ed)), cm.createForm("colorpicker_named_form")), namedList = [], namedLabelCtrl = (each(namedColors, function(name, hex) {
+            namedList.push({
+                value: hex,
+                text: name
+            });
+        }), cm.createTextBox("colorpicker_named_label", {
+            name: "named_label",
+            value: "",
+            attributes: {
+                readonly: !0
+            }
+        })), tabs = (namedForm.add(new ibis.ui.ColorGrid("colorpicker_named_grid", {
+            colors: namedList,
+            onclick: function(val) {
+                callback(val), win.close();
+            },
+            onmouseover: function(val) {
+                setHexColor(hexCtrl, val), namedLabelCtrl.value(namedColors[val] || "");
+            }
+        }, ed)), namedForm.add(namedLabelCtrl), cm.createTabs("colorpicker_tabs")), rgbLayout = (tabs.add({
+            id: "colorpicker_tab_rgb",
+            title: "RGB",
+            items: [ rgbLayout, rgbForm ],
+            class: "mceColorRgb"
+        }), tabs.add({
+            id: "colorpicker_tab_web",
+            title: "Web",
+            items: [ webForm ]
+        }), tabs.add({
+            id: "colorpicker_tab_named",
+            title: "Named",
+            items: [ namedForm ]
+        }), getStylesheetColors(ed)), rgbForm = ed.settings.colorpicker_custom_colors || [];
+        function updateFromRgb() {
+            var rgb = {
+                r: parseInt(rCtrl.value(), 10) || 0,
+                g: parseInt(gCtrl.value(), 10) || 0,
+                b: parseInt(bCtrl.value(), 10) || 0
+            }, rgb = new Color(rgb).toHex();
+            colorPickerCtrl.value(rgb), setHexColor(hexCtrl, rgb);
+        }
+        function updateFromHex() {
+            var hex = "#" + hexCtrl.value(), hex = new Color(hex), rgb = hex.toRgb();
+            colorPickerCtrl.value(hex.toHex()), rCtrl.value(rgb.r), gCtrl.value(rgb.g), 
+            bCtrl.value(rgb.b);
+        }
+        (rgbLayout.length || rgbForm.length) && (webForm = cm.createForm("colorpicker_custom_form"), 
+        rgbLayout.length && (sheetList = [], each(rgbLayout, function(c) {
+            sheetList.push({
+                value: c,
+                text: c
+            });
+        }), webForm.add(new ibis.ui.ColorGrid("colorpicker_sheet_grid", {
+            colors: sheetList,
+            onclick: function(val) {
+                callback(val), win.close();
+            },
+            onmouseover: function(val) {
+                setHexColor(hexCtrl, val);
+            }
+        }, ed))), rgbForm.length && (customList = [], each(rgbForm, function(c) {
+            customList.push({
+                value: c,
+                text: c
+            });
+        }), webForm.add(new ibis.ui.ColorGrid("colorpicker_custom_grid", {
+            colors: customList,
+            onclick: function(val) {
+                callback(val), win.close();
+            },
+            onmouseover: function(val) {
+                setHexColor(hexCtrl, val);
+            }
+        }, ed))), tabs.add({
+            id: "colorpicker_tab_custom",
+            title: "Custom",
+            items: [ webForm ]
+        })), colorPickerCtrl.onChange.add(function(ctrl) {
+            var rgb = ctrl.rgb();
+            rCtrl.value(rgb.r), gCtrl.value(rgb.g), bCtrl.value(rgb.b), setHexColor(hexCtrl, ctrl.value());
+        });
+        var win = ed.windowManager.open({
+            title: ed.getLang("colorpicker.title", "Color"),
+            items: [ tabs, hexForm ],
+            classes: "colorpicker-window",
+            size: "mce-modal-square-small",
+            open: function() {
+                var initColor = value || "#000000", initColor = (initColor && !/^#/.test(initColor) && (initColor = function(value) {
+                    var color = "";
+                    return each(namedColors, function(name, hex) {
+                        if (name.toLowerCase() === value.toLowerCase()) return color = hex, 
+                        !1;
+                    }), color;
+                }(initColor) || "#000000"), new Color(initColor)), rgb = initColor.toRgb(), rgb = (rCtrl.value(rgb.r), 
+                gCtrl.value(rgb.g), bCtrl.value(rgb.b), initColor.toHex());
+                setHexColor(hexCtrl, rgb), colorPickerCtrl.value(rgb), DOM.bind(rCtrl.id, "change", updateFromRgb), 
+                DOM.bind(gCtrl.id, "change", updateFromRgb), DOM.bind(bCtrl.id, "change", updateFromRgb), 
+                DOM.bind(hexCtrl.id, "change", updateFromHex);
+            },
+            close: function() {
+                tabs.destroy();
+            },
+            buttons: [ {
+                title: ed.getLang("colorpicker.insert", "Ok"),
+                id: "insert",
+                classes: "primary",
+                onsubmit: function() {
+                    callback("#" + hexCtrl.value());
+                }
+            }, {
+                title: ed.getLang("colorpicker.cancel", "Cancel"),
+                id: "cancel"
+            } ]
+        });
+    }
+    ibis.create("ibis.ui.ColorGrid:ibis.ui.Control", {
+        ColorGrid: function(id, s, ed) {
+            this._super(id, s, ed), this.type = "colorgrid", this.classPrefix = "mceColorGrid";
+        },
+        renderHTML: function() {
+            var s = this.settings, h = '<div id="' + this.id + '" class="mceColorGrid">';
+            return each(s.colors, function(item) {
+                h += '<span role="option" title="' + item.text + '" data-mce-color="' + item.value + '" style="background-color:' + item.value + '"></span>';
+            }), h + "</div>";
+        },
+        postRender: function() {
+            var s = this.settings;
+            s.onclick && DOM.bind(this.id, "click", function(e) {
+                e = e.target.getAttribute("data-mce-color");
+                e && s.onclick(e);
+            }), s.onmouseover && DOM.bind(this.id, "mouseover", function(e) {
+                e = e.target.getAttribute("data-mce-color");
+                e && s.onmouseover(e);
+            });
+        }
+    }), ibis.PluginManager.add("colorpicker", function(ed) {
+        ed.settings.color_picker_callback || (ed.settings.color_picker_callback = function(callback, value) {
+            showDialog(ed, callback, value);
+        }), ed.addCommand("mceColorPicker", function(ui, value) {
+            showDialog(ed, value.callback, value.color);
+        });
+    });
+}();

@@ -1,0 +1,127 @@
+<?php
+
+use Joomla\CMS\Language\Text;
+use Joomla\Registry\Registry;
+
+$item = $displayData->get('Item');
+$form = $displayData->getForm();
+
+$data = new Registry($form->getValue('config'));
+
+$rows = $displayData->get('Rows');
+$plugins = $displayData->get('Plugins');
+$available = $displayData->get('AvailableButtons');
+
+// width and height
+$width = $data->get('width', '100%');
+$height = $data->get('height', 'auto');
+
+if (is_numeric($width) && strpos('%', $width) === false) {
+    $width .= 'px';
+}
+if (is_numeric($height) && strpos('%', $height) === false) {
+    $height .= 'px';
+}
+
+?>
+<div class="control-group mt-3 mb-0 <?php echo !empty($displayData->formclass) ? $displayData->formclass : ''; ?>">
+    <div class="control-label">
+        <label class="hasPopover" title="<?php echo Text::_('WF_PROFILES_FEATURES_LAYOUT_EDITOR_DESC'); ?>"><?php echo Text::_('WF_PROFILES_FEATURES_LAYOUT_EDITOR'); ?></label>
+    </div>
+    <div class="controls">
+        <div class="editor-layout">
+            <!-- Editor Toggle -->
+            <span id="editor_toggle">
+                <button class="wf-editor-toggle btn btn-link">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 448 448"><title></title><g id="wf-toggle-icon" stroke="none" stroke-width="1"></g><path d="M280 64.132v59.482c15.84 6.914 30.406 16.803 42.995 29.391 26.443 26.442 41.005 61.6 41.005 98.995s-14.563 72.552-41.005 98.995c-26.442 26.442-61.599 41.005-98.995 41.005s-72.552-14.563-98.995-41.005c-26.442-26.442-41.005-61.6-41.005-98.995s14.563-72.552 41.005-98.995c12.589-12.589 27.155-22.478 42.995-29.392v-59.481c-80.959 24.097-140 99.082-140 187.868 0 108.248 87.753 196 196 196s196-87.752 196-196c0-88.786-59.041-163.77-140-187.868zM196 0h56v224h-56z"></path></svg>
+                </button>
+                <span class="editor-toggle-text"><?php echo $data->get('toggle_label', ''); ?></span>
+            </span>
+            <!-- Width Marker -->
+            <div class="widthMarker border border border-dark-subtle border-bottom-0" style="width:<?php echo $width; ?>;">
+                <span class="badge bg-secondary"><?php echo $width; ?></span>
+            </div>
+            <!-- Toolbar -->
+            <div class="mce-ibis mce-container mce-panel mceEditor mceLayout mceDefaultSkin" role="application">
+                <div class="mce-container-body mce-stack-layout mceLayout" style="max-width:<?php echo $width; ?>" role="presentation">
+                    <div class="mceToolbar sortable-list" role="group">
+                        <?php foreach ($rows as $key => $groups): ?>
+                            <div class="mce-container mce-toolbar mce-stack-layout-item mceToolbarRow mceToolbarRow<?php echo $key; ?> Enabled sortable-list-item">
+                                <?php foreach ($groups as $buttons): ?>
+                                    <!--div class="mce-container mce-flow-layout-item mce-btn-group" role="group"-->
+                                    <?php foreach ($buttons as $button): ?>
+                                        <?php if (!empty($button->icon)): ?>
+                                            <div tabindex="-1" class="mceToolbarItem mce-toolbar-item <?php echo $button->type; ?> mce-widget mce-btn" data-name="<?php echo $button->name; ?>" role="button" aria-label="<?php echo $button->title; ?>" aria-description="<?php echo $button->description; ?>">
+                                                <?php foreach ($button->icon as $icon): ?>
+                                                    <div tabindex="-1" class="mceButton <?php echo $button->class; ?>" role="presentation" title="<?php echo $button->title; ?>">
+                                                        <?php if ($button->image): ?>
+                                                            <span class="mceIcon mceIconImage"><img src="<?php echo $button->image; ?>" alt="" /></span>
+                                                        <?php else: ?>
+                                                            <span class="mce-ico mce-i-<?php echo $icon; ?> mceIcon mce_<?php echo $icon; ?>"></span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                    <!--/div-->
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="mce-edit-area mce-container mce-panel mce-stack-layout-item mceIframeContainer">
+                        <div>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        </div>
+                    </div>
+
+                    <div class="mce-statusbar mce-container mce-panel mce-last mce-stack-layout-item mce-statusbar mceStatusbar mceLast">
+                        <div class="mce-container-body mce-flow-layout mcePathRow" role="group" tabindex="-1">
+                            <div class="mcePathLabel">Path: </div>
+                            <div aria-level="0" tabindex="-1" data-index="0" class="mce-path-item mce-last mcePathPath" role="button">p</div>
+                        </div>
+                        <div class="mce-flow-layout-item mce-last mce-resizehandle mceResize" tabindex="-1"></div>
+                        <div class="mce-wordcount mce-widget mce-label mce-flow-layout-item mceWordCount">Words: 69</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="control-group mt-3 mb-4 <?php echo !empty($displayData->formclass) ? $displayData->formclass : ''; ?>">
+    <div class="control-label">
+        <label class="hasPopover" title="<?php echo Text::_('WF_PROFILES_FEATURES_LAYOUT_AVAILABLE_DESC'); ?>"><?php echo Text::_('WF_PROFILES_FEATURES_LAYOUT_AVAILABLE'); ?></label>
+    </div>
+    <div class="controls">
+        <div class="editor-button-pool">
+            <div class="mce-ibis mce-container mce-panel mceEditor mceLayout defaultSkin" role="application">
+                <div class="mce-container-body mce-stack-layout mceLayout">
+                    <div class="mce-toolbar-grp mce-container mce-panel mce-stack-layout-item mceToolbar sortable-list" role="toolbar">
+                        <?php for ($i = 0; $i < max(count($rows), 5); ++$i): ?>
+                            <div class="mce-container mce-toolbar mce-stack-layout-item mceToolbarRow mceToolbarRow<?php echo $i; ?> Enabled sortable-list-item">
+                                <!--div class="mce-container mce-flow-layout-item mce-btn-group"-->
+                                <?php foreach ($available as $plugin): ?>
+                                    <?php if ($plugin->row && $plugin->row === $i): ?>
+                                        <div tabindex="-1" class="mceToolbarItem mce-toolbar-item <?php echo $plugin->type; ?> mce-widget mce-btn" data-name="<?php echo $plugin->name; ?>" role="button" aria-label="<?php echo $plugin->title; ?>" aria-description="<?php echo $plugin->description; ?>">
+                                            <?php foreach ($plugin->icon as $icon): ?>
+                                                <div tabindex="-1" class="mceButton <?php echo $plugin->class; ?>" role="presentation" title="<?php echo $plugin->title; ?>">
+                                                    <?php if ($plugin->image): ?>
+                                                        <span class="mceIcon mceIconImage"><img src="<?php echo $plugin->image; ?>" alt="" /></span>
+                                                    <?php else: ?>
+                                                        <span class="mce-ico mce-i-<?php echo $icon; ?> mceIcon mce_<?php echo $icon; ?>"></span>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <!--/div-->
+                            </div>
+                        <?php endfor; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

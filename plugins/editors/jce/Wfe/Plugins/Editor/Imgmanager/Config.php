@@ -1,0 +1,54 @@
+<?php
+/**
+ * @package     JCE
+ * @subpackage  Editor
+ *
+ * @copyright   Copyright (c) 2009-2026 Ryan Demmer. All rights reserved
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+namespace Wfe\Plugins\Editor\Imgmanager;
+
+\defined('_JEXEC') or die;
+
+class Config
+{
+    public static function getConfig(&$settings, $application = null)
+    {
+        $plugin = new \Wfe\Plugins\Editor\Imgmanager\Plugin();
+
+        $config = array();
+
+        $filetypes = $plugin->getFileTypes();
+
+        if ($plugin->getParam('imgmanager.upload', 1)) {
+            $config['upload'] = array(
+                'max_size' => $plugin->getParam('max_size', 10240),
+                'filetypes' => $filetypes,
+                'inline' => $plugin->getParam('inline_upload', 1),
+            );
+        }
+
+        // the file browser is a plugin in its own right, and may not be enabled
+        if (!in_array('browser', $settings['plugins']) || (int) $plugin->getParam('basic_dialog_filebrowser', 1) == 0) {
+            $config['basic_dialog_filebrowser'] = false;
+        }
+
+        if ($plugin->getParam('basic_dialog', 0) == 1) {
+            $config['basic_dialog'] = true;
+
+            if (!isset($config['basic_dialog_filebrowser'])) {
+                $config['filetypes'] = $filetypes;
+            }
+
+            $config['basic_dialog_classes'] = (bool) $plugin->getParam('attributes_classes', 1);
+
+            $config['always_include_dimensions'] = (bool) $plugin->getParam('always_include_dimensions', 1);
+        }
+
+        $config['attributes'] = $plugin->getDefaultAttributes();
+        $custom_classes = (array) $plugin->getParam('custom_classes', []);
+        $config['custom_classes'] = array_values(array_filter($custom_classes));
+
+        $settings['imgmanager'] = $config;
+    }
+}

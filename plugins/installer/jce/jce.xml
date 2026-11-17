@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="installer" method="upgrade">
+  <name>plg_installer_jce</name>
+  <version>3.0.5</version>
+  <creationDate>11-11-2026</creationDate>
+  <author>Widget Factory (Pty) Ltd</author>
+  <authorEmail>info@joomlacontenteditor.net</authorEmail>
+  <authorUrl>http://www.joomlacontenteditor.net</authorUrl>
+  <copyright>Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved</copyright>
+  <license>GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html</license>
+  <description>PLG_INSTALLER_JCE_XML_DESCRIPTION</description>
+
+  <namespace path="src">Joomla\Plugin\Installer\Jce</namespace>
+
+  <files folder="plugins/installer/jce">
+    <folder plugin="jce">language</folder>
+    <folder>services</folder>
+    <folder>src</folder>
+  </files>
+
+</extension>

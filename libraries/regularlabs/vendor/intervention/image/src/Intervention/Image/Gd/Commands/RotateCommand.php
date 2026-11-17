@@ -1,0 +1,28 @@
+<?php
+
+namespace RegularLabs\Scoped\Intervention\Image\Gd\Commands;
+
+use RegularLabs\Scoped\Intervention\Image\Commands\AbstractCommand;
+use RegularLabs\Scoped\Intervention\Image\Gd\Color;
+use RegularLabs\Scoped\Intervention\Image\Image;
+class RotateCommand extends AbstractCommand
+{
+    /**
+     * Rotates image counter clockwise
+     *
+     * @param Image $image
+     *
+     * @return boolean
+     */
+    public function execute($image)
+    {
+        $angle = $this->argument(0)->type('numeric')->required()->value();
+        $color = $this->argument(1)->value();
+        $color = new Color($color);
+        // restrict rotations beyond 360 degrees, since the end result is the same
+        $angle = fmod($angle, 360);
+        // rotate image
+        $image->setCore(imagerotate($image->getCore(), $angle, $color->getInt()));
+        return \true;
+    }
+}

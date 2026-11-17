@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.9" type="plugin" group="system" method="upgrade">
+  <name>plg_system_jce</name>
+  <version>3.0.5</version>
+  <creationDate>11-11-2026</creationDate>
+  <author>Widget Factory (Pty) Ltd</author>
+  <authorEmail>info@joomlacontenteditor.net</authorEmail>
+  <authorUrl>http://www.joomlacontenteditor.net</authorUrl>
+  <copyright>Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved</copyright>
+  <license>GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html</license>
+  <description>PLG_SYSTEM_JCE_XML_DESCRIPTION</description>
+
+  <namespace path="src">Joomla\Plugin\System\Jce</namespace>
+
+  <files folder="plugins/system/jce">
+    <folder plugin="jce">language</folder>
+    <folder>services</folder>
+    <folder>src</folder>
+  </files>
+
+  <config>
+    <fields name="params">
+      <fieldset name="options">
+        <field name="column_styles" type="radio" default="1" label="PLG_SYSTEM_JCE_COLUMN_STYLES_LABEL" description="PLG_SYSTEM_JCE_COLUMN_STYLES_DESC" class="btn-group btn-group-yesno">
+          <option value="1">JYES</option>
+          <option value="0">JNO</option>
+        </field>
+      </fieldset>
+    </fields>
+  </config>
+
+</extension>
