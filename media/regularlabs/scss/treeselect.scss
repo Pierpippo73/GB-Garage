@@ -1,0 +1,201 @@
+/**
+ * [Copyright Regular Labs]
+ */
+
+@import "_variables";
+
+.rl-treeselect {
+    &.card {
+        border: solid 1px var(--template-bg-dark-20, var(--border-color, #dfe3e7));
+    }
+
+    .card-header {
+        border-bottom: solid 1px var(--template-bg-dark-20, var(--border-color, #dfe3e7));
+    }
+
+    .card-body {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .treeselect {
+        display:              block;
+        padding-inline-start: 0;
+        margin-bottom:        0;
+        list-style:           none;
+
+        li {
+            position:    relative;
+            display:     block;
+            line-height: 2.2rem;
+            list-style:  none;
+
+            li {
+                padding-inline-start: 3rem;
+
+                &::before {
+                    position:           absolute;
+                    inset-block-start:  1.1rem;
+                    inset-inline-start: 1rem;
+                    width:              1rem;
+                    height:             1px;
+                    margin:             auto;
+                    content:            '';
+                    background-color:   var(--treeselect-line-color, var(--border-color, #dfe3e7));
+                }
+
+                &::after {
+                    position:           absolute;
+                    inset-block-start:  0;
+                    inset-block-end:    0;
+                    inset-inline-start: 1rem;
+                    width:              1px;
+                    content:            '';
+                    background-color:   var(--treeselect-line-color, var(--border-color, #dfe3e7));
+                }
+
+                &:last-child::after {
+                    height: 1.1rem;
+                }
+            }
+        }
+
+        .dropdown-toggle::after {
+            font-size:      1.1rem;
+            vertical-align: middle;
+        }
+
+        .treeselect-toggle {
+            display:         inline-flex;
+            align-items:     center;
+            justify-content: center;
+            width:           1.5rem;
+            margin-inline:   0 .25rem;
+            color:           inherit;
+            line-height:     2.2rem;
+            vertical-align:  middle;
+            cursor:          pointer;
+
+            &.icon-chevron-down,
+            &.icon-chevron-left,
+            &.icon-chevron-right {
+                margin-inline-start: 0;
+            }
+        }
+
+        .treeselect-item {
+            display:        inline-flex;
+            align-items:    center;
+            min-height:     2.2rem;
+            vertical-align: middle;
+
+            input {
+                position:          relative;
+                margin-inline-end: .35rem;
+            }
+
+            label {
+                display:       inline-flex;
+                align-items:   center;
+                gap:           .5rem;
+                margin-bottom: 0;
+            }
+        }
+
+        .treeselect-menu {
+            display:     inline-block;
+            line-height: 1;
+
+            .dropdown-toggle {
+                display:         inline-flex;
+                align-items:     center;
+                justify-content: center;
+                width:           2rem;
+                height:          2rem;
+                padding:         0;
+                color:           #212529;
+                background:      var(--gray-100, #f8f9fa);
+                border:          1px solid var(--gray-400, #ced4da);
+                box-shadow:      none;
+
+                &::after {
+                    position:     static;
+                    display:      block;
+                    width:        0;
+                    height:       0;
+                    margin:       0;
+                    content:      '';
+                    background:   transparent;
+                    border-top:   .4rem solid #212529;
+                    border-right: .35rem solid transparent;
+                    border-bottom: 0;
+                    border-left:  .35rem solid transparent;
+                    transform:    none;
+                }
+
+                &.show {
+                    color:            #212529;
+                    background-color: var(--gray-200, #e9ecef);
+                    border-color:     var(--gray-400, #ced4da);
+                }
+
+                &:focus-visible {
+                    outline:        2px solid var(--focus-ring-color, #0d6efd);
+                    outline-offset: 1px;
+                }
+            }
+
+            .dropdown-menu {
+                min-width:   12rem;
+                padding:     .25rem 0;
+                font-size:   .875rem;
+                line-height: 1.5;
+            }
+
+            .dropdown-header {
+                margin:      0;
+                padding:     .5rem .75rem;
+                color:       var(--secondary-color, #6c757d);
+                font-size:   .75rem;
+                line-height: 1.5;
+            }
+
+            .dropdown-item {
+                display:     flex;
+                align-items: center;
+                gap:         .5rem;
+                width:       100%;
+                padding:     .5rem .75rem;
+                color:       inherit;
+                font-size:   .875rem;
+                line-height: 1.5;
+                text-align:  start;
+                white-space: nowrap;
+            }
+        }
+    }
+
+    .treeselect-sub {
+        padding-inline-start: 0;
+        list-style:           none;
+    }
+
+    .dropdown-header {
+        border-bottom:  1px solid rgba(0, 0, 0, 0.15);
+        padding:        .75rem;
+        text-transform: uppercase;
+    }
+
+    .dropdown-item {
+        border-bottom: none;
+        line-height:   1rem;
+        padding:       .75rem;
+    }
+
+    .rl-item-checked > .treeselect-item {
+        margin:           0 -.25rem;
+        padding:          0 .25rem;
+        background-color: rl-color(blue, 200);
+        border-radius:    0.25rem;
+    }
+}

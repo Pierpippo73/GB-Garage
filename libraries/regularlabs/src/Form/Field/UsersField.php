@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -17,6 +17,7 @@ use Joomla\CMS\Language\Text as JText;
 use RegularLabs\Library\DB;
 use RegularLabs\Library\Form\Form;
 use RegularLabs\Library\Form\FormField;
+use RegularLabs\Library\Form\SelectListOptions;
 class UsersField extends FormField
 {
     static $users;
@@ -63,12 +64,17 @@ class UsersField extends FormField
     }
     private function getUsers(): array
     {
-        if (!is_null(self::$users)) {
+        if (!$this->lookup_active && !is_null(self::$users)) {
             return self::$users;
         }
         $query = $this->db->getQuery(\true)->select('u.name, u.username, u.email, u.id, u.block as disabled')->from('#__users AS u')->order('name');
-        $this->db->setQuery($query);
-        self::$users = $this->db->loadObjectList();
+        $key = $this->getValueField();
+        $key = $key === 'identifiers' ? 'id' : $key;
+        $this->applyLookupToQuery($query, ['u.name', 'u.username', 'u.id'], 'u.' . $key);
+        if ($this->lookup_active) {
+            return SelectListOptions::load($this, $query, $this->lookup_limit);
+        }
+        self::$users = SelectListOptions::load($this, $query, $this->lookup_limit);
         return self::$users;
     }
     private function getUsersCount(): int

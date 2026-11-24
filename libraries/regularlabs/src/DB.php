@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -221,6 +221,26 @@ class DB
             return $cache->get();
         }
         return $cache->set(self::get()->getTableColumns($table, $typeOnly));
+    }
+    public static function hasCategories(string $table): bool
+    {
+        $db = self::get();
+        $query = $db->getQuery(\true)->select('COUNT(*)')->from($db->quoteName($table))->where($db->quoteName('category') . ' != ' . $db->quote(''))->where($db->quoteName('category') . ' IS NOT NULL');
+        $db->setQuery($query);
+        return (bool) $db->loadResult();
+    }
+    /**
+     * Check whether another non-trashed item uses the given value.
+     */
+    public static function hasItemWithValue(string $table, string $column, string $value, int $excludeId = 0): bool
+    {
+        $db = self::get();
+        $query = $db->getQuery(\true)->select($db->quoteName('id'))->from($db->quoteName($table))->where($db->quoteName($column) . ' = ' . $db->quote($value))->where($db->quoteName('published') . ' != -2')->setLimit(1);
+        if ($excludeId) {
+            $query->where($db->quoteName('id') . ' != ' . $excludeId);
+        }
+        $db->setQuery($query);
+        return (bool) $db->loadResult();
     }
     public static function in(array|string $keys, array|string $values, array|object $options = [], bool $quote_key = \true): string
     {

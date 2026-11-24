@@ -4785,6 +4785,9 @@
                     function hasBrBeforeAfter(node, left) {
                         for (var walker = new TreeWalker(node, dom.getParent(node.parentNode, dom.isBlock) || body); node = walker[left ? "prev" : "next"](); ) if ("BR" === node.nodeName) return 1;
                     }
+                    function isLink(node) {
+                        return node && "A" === node.nodeName && node.hasAttribute("href");
+                    }
                     function findTextNodeRelative(left, startNode) {
                         var walker, lastInlineElement, parentBlockContainer;
                         if (startNode = startNode || container, parentBlockContainer = dom.getParent(startNode.parentNode, dom.isBlock) || body, 
@@ -4816,6 +4819,7 @@
                                 if (isCaretContainer(node)) return;
                                 if (nonEmptyElementsMap[node.nodeName] || "TABLE" == node.nodeName) return;
                             }
+                            if (collapsed && (isLink(container.childNodes[offset - 1]) || isLink(container.childNodes[offset]))) return;
                             if (container.hasChildNodes()) {
                                 if (offset = Math.min(!directionLeft && 0 < offset ? offset - 1 : offset, container.childNodes.length - 1), 
                                 container = container.childNodes[offset], offset = 0, 

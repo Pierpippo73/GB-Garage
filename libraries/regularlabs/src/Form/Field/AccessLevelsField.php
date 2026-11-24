@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -14,6 +14,7 @@ namespace RegularLabs\Library\Form\Field;
 defined('_JEXEC') or die;
 use RegularLabs\Library\DB;
 use RegularLabs\Library\Form\FormField;
+use RegularLabs\Library\Form\SelectListOptions;
 class AccessLevelsField extends FormField
 {
     static $options;
@@ -26,12 +27,15 @@ class AccessLevelsField extends FormField
     }
     protected function getOptions()
     {
-        if (!is_null(self::$options)) {
+        if (!$this->lookup_active && !is_null(self::$options)) {
             return self::$options;
         }
         $query = $this->db->getQuery(\true)->select('a.id as value, a.title as text')->from('#__viewlevels AS a')->order('a.ordering ASC');
-        $this->db->setQuery($query);
-        self::$options = $this->db->loadObjectList();
+        $this->applyLookupToQuery($query, ['a.title', 'a.id'], 'a.id');
+        if ($this->lookup_active) {
+            return SelectListOptions::load($this, $query, $this->lookup_limit);
+        }
+        self::$options = SelectListOptions::load($this, $query, $this->lookup_limit);
         return self::$options;
     }
 }

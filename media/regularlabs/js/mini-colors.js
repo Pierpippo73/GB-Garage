@@ -1,6 +1,6 @@
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -401,37 +401,40 @@ var MiniColorsPicker;
     window.RegularLabs = window.RegularLabs || {};
 
     window.RegularLabs.MiniColors = window.RegularLabs.MiniColors || {
+        initializedInputs: new WeakSet(),
+
         init: function() {
             const minicolors = document.querySelectorAll('div.rl-mini-colors');
             const options    = RegularLabs.Scripts.getOptions('rl_minicolors', {});
 
-            minicolors.forEach((minicolor) => {
-                const field = minicolor.querySelector('input');
+            minicolors.forEach(minicolor => this.initializeField(minicolor, options));
+        },
 
-                if ( ! field || field.dataset.miniColorsInitialized) {
-                    return;
-                }
+        initializeField: function(minicolor, options) {
+            const field = minicolor.querySelector('input');
 
-                field.dataset.miniColorsInitialized = 'true';
+            if ( ! field || this.initializedInputs.has(field)) {
+                return;
+            }
 
-                MiniColorsPicker({
-                    el          : `#${field.id}`,
-                    theme       : 'default',
-                    alpha       : false,
-                    swatchesOnly: true,
-                    swatches    : options.swatches
-                });
-
-                if ( ! field.dataset['table'] || ! field.dataset['item_id']) {
-                    return;
-                }
-
-                field.addEventListener('change', () => {
-                    RegularLabs.MiniColors.save(field.dataset['table'], field.dataset['item_id'], field.dataset['id_column'], field.value, field);
-                });
-
-                RegularLabs.MiniColors.setTableRowBackground(field, field.value);
+            this.initializedInputs.add(field);
+            MiniColorsPicker({
+                el          : `#${field.id}`,
+                theme       : 'default',
+                alpha       : false,
+                swatchesOnly: true,
+                swatches    : options.swatches
             });
+
+            if ( ! field.dataset['table'] || ! field.dataset['item_id']) {
+                return;
+            }
+
+            field.addEventListener('change', () => {
+                this.save(field.dataset['table'], field.dataset['item_id'], field.dataset['id_column'], field.value, field);
+            });
+
+            this.setTableRowBackground(field, field.value);
         },
 
         setTableRowBackground: async function(element, color, opacity = .1) {

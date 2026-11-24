@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Sourcerer
- * @version         17.0.1
+ * @version         18.0.0
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -11,6 +11,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Access\Access as JAccess;
 use Joomla\CMS\Factory as JFactory;
 use Joomla\CMS\Installer\Manifest\PackageManifest as JPackageManifest;
 use Joomla\CMS\Language\Text as JText;
@@ -141,6 +142,50 @@ if ( ! class_exists('pkg_sourcererInstallerScript'))
         private static function getDB()
         {
             return JFactory::getContainer()->get(JDatabaseInterface::class);
+        }
+
+        public static function getSuperUserId(): int
+        {
+            $rules      = JAccess::getAssetRules(null, true)->getData();
+            $admin_rule = $rules['core.admin'] ?? null;
+            $user_ids   = [];
+
+            foreach (array_keys(array_filter($admin_rule?->getData() ?? [])) as $identity)
+            {
+                $identity = (int) $identity;
+
+                if ($identity < 0)
+                {
+                    $user_ids[] = -$identity;
+                }
+                elseif ($identity > 0)
+                {
+                    $user_ids = array_merge($user_ids, JAccess::getUsersByGroup($identity, true));
+                }
+            }
+
+            if ( ! $user_ids)
+            {
+                return 0;
+            }
+
+            $db    = self::getDB();
+            $query = $db->getQuery(true)
+                ->select($db->quoteName('id'))
+                ->from($db->quoteName('#__users'))
+                ->where($db->quoteName('block') . ' = 0')
+                ->whereIn($db->quoteName('id'), array_values(array_unique($user_ids)))
+                ->order($db->quoteName('id'));
+
+            foreach ($db->setQuery($query)->loadColumn() as $user_id)
+            {
+                if (JAccess::check((int) $user_id, 'core.admin'))
+                {
+                    return (int) $user_id;
+                }
+            }
+
+            return 0;
         }
 
         private static function getFolderFromExtensionName($extension)
@@ -382,7 +427,7 @@ if ( ! class_exists('pkg_sourcererInstallerScript'))
                     $release
                 );
                 $changelog[$index] = preg_replace(
-                    '/^([ \t]*[+!^#] )((?:\[[^\]\n]+\][ \t]*)*\[SECURITY FIX\][^\n]*)$/m',
+                    '/^([ \t]*[+!^#] )((?:\[[^\]\n]+\][ \t]*)*\[SECURITY FIX(?::(?:LOW|MEDIUM|HIGH|CRITICAL))?\][^\n]*)$/m',
                     '$1<span class="text-primary rl-security-fix">$2</span>',
                     $changelog[$index]
                 );
@@ -475,6 +520,16 @@ if ( ! class_exists('pkg_sourcererInstallerScript'))
 
         private static function formatChangelogMetadata(string $changelog, array $badge_classes): string
         {
+            foreach (['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as $severity)
+            {
+                $changelog = str_replace(
+                    '[SECURITY FIX:' . $severity . ']',
+                    '<span class="' . $badge_classes['primary'] . '">'
+                    . JText::_('PKG_RL_SECURITY_FIX') . ' (' . ucfirst(strtolower($severity)) . ')</span>',
+                    $changelog
+                );
+            }
+
             $changelog = str_replace(
                 ['[FREE]', '[PRO]', '[BC BREAK]', '[SECURITY FIX]'],
                 [

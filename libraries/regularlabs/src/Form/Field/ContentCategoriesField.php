@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -27,6 +27,7 @@ class ContentCategoriesField extends FormField
     }
     protected function getOptions()
     {
+        $query = $this->db->getQuery(\true)->from('#__categories as c')->where('c.extension = ' . $this->db->quote('com_content'))->where('c.parent_id > 0')->where('c.published > -1');
         if ($this->max_list_count) {
             $query = $this->db->getQuery(\true)->select('COUNT(*)')->from('#__categories as c')->where('c.extension = ' . $this->db->quote('com_content'))->where('c.parent_id > 0')->where('c.published > -1');
             $this->db->setQuery($query);
@@ -37,6 +38,7 @@ class ContentCategoriesField extends FormField
         }
         $this->value = ArrayHelper::toArray($this->value);
         $query->clear('select')->select('c.id, c.title as name, c.published, c.language, c.level')->order('c.lft');
+        $this->applyLookupToQuery($query, ['c.title', 'c.id', 'c.language'], 'c.id');
         return $this->getOptionsByQuery($query, ['language', 'unpublished'], -1);
     }
 }

@@ -136,6 +136,168 @@ html:has(> body.rl-popup) {
     white-space: pre-wrap;
 }
 
+.rl-lazy-select {
+    .rl-list-control {
+        position: relative;
+    }
+
+    joomla-field-fancy-select {
+        display: block;
+    }
+
+    .choices {
+        margin-bottom: 0;
+    }
+
+    .choices[data-type*="select-"] .choices__inner {
+        cursor: pointer;
+    }
+
+    .choices[data-type*="select-one"] {
+        .choices__inner {
+            position: relative;
+        }
+
+        .choices__list--single {
+            padding-inline-end: 1.5rem;
+
+            [data-button] {
+                display: none;
+            }
+        }
+
+        .rl-clear-selection {
+            position:         absolute;
+            inset-inline-end: 3rem;
+            top:              50%;
+            margin:           0;
+            transform:        translateY(-50%);
+        }
+    }
+
+    .choices__list--dropdown > .rl-list-search {
+        padding:       .5rem;
+        border-bottom: 1px solid var(--choices-keyline-color, #ddd);
+    }
+
+    .choices__list--dropdown > .rl-list-status {
+        padding: .25rem .75rem;
+
+        &:empty {
+            display: none;
+        }
+    }
+
+    &.rl-list-has-status .choices__list--dropdown :is(.has-no-choices, .has-no-results) {
+        display: none;
+    }
+
+    .choices__list--dropdown .rl-list-load-more {
+        display: block;
+        width:   100%;
+        margin:  0;
+        padding: .5rem .75rem;
+        font-style: italic;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    .rl-list-placeholder {
+        display: block;
+        padding: .35rem .25rem;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    .rl-list-placeholder,
+    .choices__list--single [data-item][data-value=""] {
+        color:      var(--secondary-color, #6c757d);
+        font-style: italic;
+        opacity:    1;
+    }
+
+    .choices__list--dropdown [data-choice][data-value=""] {
+        display: none;
+    }
+
+    .choices__list--multiple .choices__item[data-item] {
+        display:     inline-flex;
+        align-items: center;
+    }
+
+    .rl-list-search {
+        position:    relative;
+        display:     flex;
+        align-items: center;
+        clear:       both;
+        min-height:  1.75rem;
+    }
+
+    .choices[data-type*="select-"] .rl-list-search > .choices__input {
+        display:              block;
+        flex:                 1;
+        width:                100% !important;
+        min-width:            0;
+        max-width:            100%;
+        padding:              .25rem;
+        margin:               0;
+        border:               0;
+        background:           transparent;
+        line-height:          1.5;
+    }
+
+    .choices[data-type*="select-"] :is(.rl-clear-selection, .choices__button_joomla, .choices__button) {
+        display:          inline-flex;
+        align-items:      center;
+        justify-content:  center;
+        flex-shrink:      0;
+        width:            1.25rem;
+        height:           1.25rem;
+        margin:           0;
+        margin-inline-start: .25rem;
+        padding:          0;
+        border:           0;
+        border-radius:    .25rem;
+        background:       transparent;
+        color:            inherit;
+        font-size:        1rem;
+        font-weight:      normal;
+        line-height:      1;
+        text-indent:      -9999px;
+        vertical-align:   middle;
+        overflow:         hidden;
+        opacity:          .5;
+        cursor:           pointer;
+
+        &::before {
+            content:     "\00d7";
+            position:    absolute;
+            inset:       0;
+            display:     grid;
+            place-items: center;
+            text-indent: 0;
+            line-height: 1;
+        }
+
+        > span {
+            display: none;
+        }
+
+        &[hidden] {
+            display: none;
+        }
+
+        &:hover,
+        &:focus-visible {
+            opacity: 1;
+        }
+    }
+}
+
 .rl-form {
     //.control-group {
     //    .form-select {

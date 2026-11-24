@@ -2,11 +2,11 @@
 <extension type="package" method="upgrade">
     <name>PKG_JCE</name>
     <author>Widget Factory (Pty) Ltd</author>
-    <creationDate>11-11-2026</creationDate>
+    <creationDate>18-11-2026</creationDate>
     <copyright>Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved</copyright>
     <license>GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html</license>
     <packagename>jce</packagename>
-    <version>3.0.5</version>
+    <version>3.0.6</version>
     <url>https://www.joomlacontenteditor.net</url>
     <packager>Widget Factory (Pty) Ltd</packager>
     <packagerurl>https://www.joomlacontenteditor.net</packagerurl>

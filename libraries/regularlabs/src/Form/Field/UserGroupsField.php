@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text as JText;
 use RegularLabs\Library\RegEx;
 use RegularLabs\Library\DB;
 use RegularLabs\Library\Form\FormField;
+use RegularLabs\Library\Form\SelectListOptions;
 use RegularLabs\Library\Json;
 use RegularLabs\Library\User;
 use SimpleXMLElement;
@@ -48,12 +49,7 @@ class UserGroupsField extends FormField
     }
     protected function getOptions()
     {
-        if (empty(self::$options)) {
-            $query = $this->db->getQuery(\true)->select('a.id as value, a.title as text, a.parent_id AS parent')->from('#__usergroups AS a')->select('COUNT(DISTINCT b.id) AS level')->join('LEFT', '#__usergroups AS b ON a.lft > b.lft AND a.rgt < b.rgt')->group('a.id')->order('a.lft ASC');
-            $this->db->setQuery($query);
-            self::$options = $this->db->loadObjectList();
-        }
-        $options = self::$options;
+        $options = $this->getUserGroupOptions();
         if (!$this->get('treeselect', \true)) {
             foreach ($options as $key => $option) {
                 $options[$key] = clone $option;
@@ -64,6 +60,20 @@ class UserGroupsField extends FormField
             return $options;
         }
         array_unshift($options, (object) ['value' => -1, 'text' => JText::_('JALL'), 'parent' => 0, 'level' => 0]);
+        return $options;
+    }
+    private function getUserGroupOptions(): array
+    {
+        if (!$this->lookup_active && self::$options !== null) {
+            return self::$options;
+        }
+        $query = $this->db->getQuery(\true)->select('a.id as value, a.title as text, a.parent_id AS parent')->from('#__usergroups AS a')->select('COUNT(DISTINCT b.id) AS level')->join('LEFT', '#__usergroups AS b ON a.lft > b.lft AND a.rgt < b.rgt')->group('a.id')->order('a.lft ASC');
+        $this->applyLookupToQuery($query, ['a.title', 'a.id'], 'a.id');
+        $options = SelectListOptions::load($this, $query, $this->lookup_limit);
+        if ($this->lookup_active) {
+            return $options;
+        }
+        self::$options = $options;
         return $options;
     }
     private static function hasSymbolicValue(mixed $value): bool

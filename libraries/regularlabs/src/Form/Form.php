@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -20,6 +20,7 @@ use Joomla\Registry\Registry as JRegistry;
 use RegularLabs\Library\ArrayHelper;
 use RegularLabs\Library\Config;
 use RegularLabs\Library\Document;
+use RegularLabs\Library\Input;
 use RegularLabs\Library\Parameters;
 use RegularLabs\Library\RegEx;
 use RegularLabs\Library\RequestContext;
@@ -172,17 +173,17 @@ class Form
     {
         Document::loadAdminFormAssets();
         self::loadMaxListCountPopover();
-        if ($treeselect) {
-            Document::loadTreeSelectAssets();
-        } else {
-            Document::loadFancySelectAssets();
-        }
         $submit_inputs = self::getAjaxSubmitInputs($name, $value, !empty($attributes['multiple']));
-        if (is_array($value)) {
+        if ($treeselect && is_array($value)) {
             $value = implode(',', $value);
         }
         $ajax_data = self::getAjaxFieldData($field_class, $name, $value, $id, $attributes, $treeselect, $collapse_children);
-        return '<div class="rl-ajax-wrapper">' . '<textarea name="' . $name . '" id="' . $id . '" cols="40" rows="1" class="form-control rl-ajax-field"' . ' disabled="disabled"' . ' data-rl-ajax="' . StringHelper::escape(json_encode($ajax_data)) . '">' . $value . '</textarea>' . $submit_inputs . '<div class="rl-spinner"></div>' . '</div>';
+        if ($treeselect) {
+            Document::loadTreeSelectAssets();
+            return '<div class="rl-ajax-wrapper">' . '<textarea name="' . $name . '" id="' . $id . '" cols="40" rows="1" class="form-control rl-ajax-field"' . ' disabled="disabled"' . ' data-rl-ajax="' . StringHelper::escape(json_encode($ajax_data)) . '">' . $value . '</textarea>' . $submit_inputs . '<div class="rl-spinner"></div>' . '</div>';
+        }
+        Document::loadFancySelectAssets();
+        return \RegularLabs\Library\Form\SelectList::render($ajax_data);
     }
     public static function signAjaxData(array $data): array
     {
@@ -213,7 +214,11 @@ class Form
     private static function getAjaxFieldData(string $field_class, string $name, mixed $value, string $id, array $attributes, bool $treeselect, bool $collapse_children): array
     {
         $request = RequestContext::fromInput();
-        return self::signAjaxData(['parent_request' => ['option' => $request->option, 'view' => $request->view, 'id' => $request->id], 'field_class' => $field_class, 'name' => $name, 'id' => $id, 'value' => $value, 'attributes' => $attributes, 'treeselect' => $treeselect, 'collapse_children' => $collapse_children]);
+        $parent_request = ['option' => $request->option, 'view' => $request->view, 'id' => $request->id];
+        if ($request->option === 'com_categories') {
+            $parent_request['extension'] = Input::getCmd('extension', 'com_content');
+        }
+        return self::signAjaxData(['parent_request' => $parent_request, 'field_class' => $field_class, 'name' => $name, 'id' => $id, 'value' => $value, 'attributes' => $attributes, 'treeselect' => $treeselect, 'collapse_children' => $collapse_children]);
     }
     private static function getAjaxSubmitInputs(string $name, mixed $value, bool $multiple): string
     {

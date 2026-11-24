@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -365,8 +365,17 @@ final class RegularLabs extends RL_SystemPlugin
             return true;
         }
 
-        return RL_User::authorise('core.admin')
-            || RL_User::authorise('core.manage', $option);
+        if (RL_User::authorise('core.admin'))
+        {
+            return true;
+        }
+
+        if ($option === 'com_categories')
+        {
+            $option = explode('.', (string) ($parent_request['extension'] ?? ''), 2)[0];
+        }
+
+        return $option !== '' && RL_User::authorise('core.manage', $option);
     }
 
     private function checkDownloadKey(): string

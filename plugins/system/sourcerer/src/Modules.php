@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Sourcerer
- * @version         17.0.1
+ * @version         18.0.0
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com

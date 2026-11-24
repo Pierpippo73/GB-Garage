@@ -2,8 +2,8 @@
 <extension version="4.0" type="plugin" group="system" method="upgrade">
   <name>PLG_SYSTEM_REGULARLABS</name>
   <description>PLG_SYSTEM_REGULARLABS_DESC</description>
-  <version>26.10.25669</version>
-  <creationDate>October 2026</creationDate>
+  <version>26.11.17024</version>
+  <creationDate>November 2026</creationDate>
   <author>Regular Labs (Peter van Westen)</author>
   <authorEmail>info@regularlabs.com</authorEmail>
   <authorUrl>https://regularlabs.com</authorUrl>
@@ -28,7 +28,13 @@
           <option value="0">JNO</option>
           <option value="1">JYES</option>
         </field>
+        <field name="list_search_mode" type="Radio" default="auto" label="RL_LIST_SEARCH_MODE" description="RL_LIST_SEARCH_MODE_DESC">
+          <option value="auto">RL_AUTO</option>
+          <option value="always">RL_LIST_ALWAYS_SEARCH</option>
+        </field>
+        <field name="list_search_threshold" type="Number" min="1" filter="integer" default="100" label="RL_LIST_SEARCH_THRESHOLD" description="RL_LIST_SEARCH_THRESHOLD_DESC" showon="list_search_mode:auto"/>
         <field name="max_list_count" type="Number" size="10" step="1000" class="text-monospace text-right rl-w-8em" default="10000" label="RL_MAX_LIST_COUNT" description="RL_MAX_LIST_COUNT_DESC"/>
+        <field name="trusted_proxy_ranges" type="Textarea" rows="5" label="RL_TRUSTED_PROXY_RANGES" description="RL_TRUSTED_PROXY_RANGES_DESC"/>
       </fieldset>
     </fields>
   </config>

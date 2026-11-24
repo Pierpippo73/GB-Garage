@@ -1,6 +1,7 @@
+@charset "UTF-8";
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -385,6 +386,138 @@ html:has(> body.rl-popup) {
 
 .rl-pre-wrap {
   white-space: pre-wrap;
+}
+
+.rl-lazy-select .rl-list-control {
+  position: relative;
+}
+.rl-lazy-select joomla-field-fancy-select {
+  display: block;
+}
+.rl-lazy-select .choices {
+  margin-bottom: 0;
+}
+.rl-lazy-select .choices[data-type*=select-] .choices__inner {
+  cursor: pointer;
+}
+.rl-lazy-select .choices[data-type*=select-one] .choices__inner {
+  position: relative;
+}
+.rl-lazy-select .choices[data-type*=select-one] .choices__list--single {
+  padding-inline-end: 1.5rem;
+}
+.rl-lazy-select .choices[data-type*=select-one] .choices__list--single [data-button] {
+  display: none;
+}
+.rl-lazy-select .choices[data-type*=select-one] .rl-clear-selection {
+  position: absolute;
+  inset-inline-end: 3rem;
+  top: 50%;
+  margin: 0;
+  transform: translateY(-50%);
+}
+.rl-lazy-select .choices__list--dropdown > .rl-list-search {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--choices-keyline-color, #ddd);
+}
+.rl-lazy-select .choices__list--dropdown > .rl-list-status {
+  padding: 0.25rem 0.75rem;
+}
+.rl-lazy-select .choices__list--dropdown > .rl-list-status:empty {
+  display: none;
+}
+.rl-lazy-select.rl-list-has-status .choices__list--dropdown :is(.has-no-choices, .has-no-results) {
+  display: none;
+}
+.rl-lazy-select .choices__list--dropdown .rl-list-load-more {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  font-style: italic;
+}
+.rl-lazy-select .choices__list--dropdown .rl-list-load-more[hidden] {
+  display: none;
+}
+.rl-lazy-select .rl-list-placeholder {
+  display: block;
+  padding: 0.35rem 0.25rem;
+}
+.rl-lazy-select .rl-list-placeholder[hidden] {
+  display: none;
+}
+.rl-lazy-select .rl-list-placeholder,
+.rl-lazy-select .choices__list--single [data-item][data-value=""] {
+  color: var(--secondary-color, #6c757d);
+  font-style: italic;
+  opacity: 1;
+}
+.rl-lazy-select .choices__list--dropdown [data-choice][data-value=""] {
+  display: none;
+}
+.rl-lazy-select .choices__list--multiple .choices__item[data-item] {
+  display: inline-flex;
+  align-items: center;
+}
+.rl-lazy-select .rl-list-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  clear: both;
+  min-height: 1.75rem;
+}
+.rl-lazy-select .choices[data-type*=select-] .rl-list-search > .choices__input {
+  display: block;
+  flex: 1;
+  width: 100% !important;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.25rem;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  line-height: 1.5;
+}
+.rl-lazy-select .choices[data-type*=select-] :is(.rl-clear-selection, .choices__button_joomla, .choices__button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  margin-inline-start: 0.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: inherit;
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1;
+  text-indent: -9999px;
+  vertical-align: middle;
+  overflow: hidden;
+  opacity: 0.5;
+  cursor: pointer;
+}
+.rl-lazy-select .choices[data-type*=select-] :is(.rl-clear-selection, .choices__button_joomla, .choices__button)::before {
+  content: "×";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-indent: 0;
+  line-height: 1;
+}
+.rl-lazy-select .choices[data-type*=select-] :is(.rl-clear-selection, .choices__button_joomla, .choices__button) > span {
+  display: none;
+}
+.rl-lazy-select .choices[data-type*=select-] :is(.rl-clear-selection, .choices__button_joomla, .choices__button)[hidden] {
+  display: none;
+}
+.rl-lazy-select .choices[data-type*=select-] :is(.rl-clear-selection, .choices__button_joomla, .choices__button):hover, .rl-lazy-select .choices[data-type*=select-] :is(.rl-clear-selection, .choices__button_joomla, .choices__button):focus-visible {
+  opacity: 1;
 }
 
 .rl-form .form-control {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Sourcerer
- * @version         17.0.1
+ * @version         18.0.0
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -19,6 +19,7 @@ use RegularLabs\Library\Input as RL_Input;
 use RegularLabs\Library\Plugin\System as RL_SystemPlugin;
 use RegularLabs\Library\Protect as RL_Protect;
 use RegularLabs\Plugin\System\Sourcerer\Area;
+use RegularLabs\Plugin\System\Sourcerer\ArticleSource;
 use RegularLabs\Plugin\System\Sourcerer\Clean;
 use RegularLabs\Plugin\System\Sourcerer\Modules;
 use RegularLabs\Plugin\System\Sourcerer\Params;
@@ -33,8 +34,10 @@ final class Sourcerer extends RL_SystemPlugin
 {
     private const TRUSTED_SOURCE_EVENT_PRIORITY = PHP_INT_MAX;
     static    $_extra_events        = [
-        'onAfterCleanModuleList'                   => 'onAfterCleanModuleList',
-        'onRegularLabsArticlesAnywherePrepareText' => 'onRegularLabsArticlesAnywherePrepareText',
+        'onAfterCleanModuleList'                      => 'onAfterCleanModuleList',
+        'onRegularLabsArticlesAnywherePrepareText'    => 'onRegularLabsArticlesAnywherePrepareText',
+        'onRegularLabsSourcererPrepareAuthoredContent' => 'onRegularLabsSourcererPrepareAuthoredContent',
+        'onRegularLabsSourcererPrepareUserData'        => 'onRegularLabsSourcererPrepareUserData',
     ];
     public    $_can_disable_by_url  = false;
     public    $_lang_prefix         = 'SRC';
@@ -52,6 +55,11 @@ final class Sourcerer extends RL_SystemPlugin
         $this->getDispatcher()->addListener(
             'onContentPrepare',
             [$this, 'protectTrustedCustomModuleContent'],
+            self::TRUSTED_SOURCE_EVENT_PRIORITY
+        );
+        $this->getDispatcher()->addListener(
+            'onContentPrepare',
+            [$this, 'protectTrustedArticleContent'],
             self::TRUSTED_SOURCE_EVENT_PRIORITY
         );
     }
@@ -83,7 +91,71 @@ final class Sourcerer extends RL_SystemPlugin
             return;
         }
 
+        ArticleSource::protect($source, true, false);
         $this->prepareArticle('com_content.article', $source);
+    }
+
+    public function onRegularLabsSourcererPrepareAuthoredContent(mixed $event): void
+    {
+        if ( ! $this->passChecks() || ! is_object($event) || ! method_exists($event, 'getArguments'))
+        {
+            return;
+        }
+
+        $source = $event->getArguments()[0] ?? null;
+
+        if ( ! is_object($source) || ! isset($source->text) || ! is_string($source->text))
+        {
+            return;
+        }
+
+        $source->text = ArticleSource::protectTemplate(
+            $source->text,
+            (int) ($source->created_by ?? 0),
+            (int) ($source->modified_by ?? 0)
+        );
+    }
+
+    public function protectTrustedArticleContent(mixed $event): void
+    {
+        if ( ! $this->passChecks() || ! is_object($event) || ! method_exists($event, 'getArguments'))
+        {
+            return;
+        }
+
+        $arguments = $event->getArguments();
+        $article   = $arguments['subject'] ?? $arguments[1] ?? null;
+        $context   = (string) ($arguments['context'] ?? $arguments[0] ?? '');
+
+        if (is_object($article))
+        {
+            ArticleSource::protect(
+                $article,
+                ! RL_Document::isCategoryList($context),
+                (bool) Params::get()->enable_in_head
+            );
+        }
+    }
+
+    public function onRegularLabsSourcererPrepareUserData(mixed $event): void
+    {
+        if ( ! $this->passChecks() || ! is_object($event) || ! method_exists($event, 'getArguments'))
+        {
+            return;
+        }
+
+        $source = $event->getArguments()[0] ?? null;
+
+        if ( ! is_object($source) || ! is_string($source->text ?? null))
+        {
+            return;
+        }
+
+        $source->text = ArticleSource::protectUserData(
+            $source->text,
+            (int) ($source->user_id ?? 0),
+            (array) ($source->values ?? [])
+        );
     }
 
     public function protectTrustedCustomModuleContent(mixed $event): void
@@ -148,6 +220,7 @@ final class Sourcerer extends RL_SystemPlugin
         }
 
         Modules::clean($html);
+        $html = ArticleSource::clean($html);
     }
 
     protected function handleOnAfterDispatch(): void
@@ -245,6 +318,8 @@ final class Sourcerer extends RL_SystemPlugin
             $diagnostics
         );
 
+        $article->{$field} = ArticleSource::clean($article->{$field});
+
         return true;
     }
 
@@ -278,7 +353,10 @@ final class Sourcerer extends RL_SystemPlugin
             $diagnostics
         );
 
-        $article->params->set('article_page_title', $page_title);
+        $article->params->set(
+            'article_page_title',
+            ArticleSource::clean($page_title)
+        );
     }
 
     private function getContentArea(string $context, object $article): string
@@ -331,6 +409,7 @@ final class Sourcerer extends RL_SystemPlugin
         $security    = $area === 'articles'
             ? Security::getForArticle($article)
             : Security::getForUntrustedArea($area);
+        $security->verify_article_source = $area === 'articles';
         $diagnostics = $this->getContentDiagnostics($context);
 
         self::replaceArticleField($article, 'description', $area, $remove, $security, $diagnostics);

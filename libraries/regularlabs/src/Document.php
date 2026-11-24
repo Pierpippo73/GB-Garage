@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -251,6 +251,13 @@ class Document
         \RegularLabs\Library\Language::load('plg_system_regularlabs');
         JText::script('RL_AJAX_FIELD_LOADING_FAILED');
         JText::script('RL_RETRY');
+        JText::script('RL_LIST_TYPE_TO_SEARCH');
+        JText::script('RL_LIST_LOADING');
+        JText::script('RL_LIST_LOAD_MORE');
+        JText::script('RL_LIST_SEARCH_OR_SELECT');
+        JText::script('RL_LIST_REFINE_SEARCH');
+        JText::script('JGLOBAL_SELECT_NO_RESULTS_MATCH');
+        JText::script('JSEARCH_FILTER');
         self::style('regularlabs.admin-form');
         self::script('regularlabs.admin-form');
         self::script('regularlabs.regular');
@@ -268,6 +275,7 @@ class Document
     }
     public static function loadTreeSelectAssets(): void
     {
+        self::style('regularlabs.treeselect');
         self::script('regularlabs.treeselect');
         self::useScript('bootstrap.dropdown');
     }

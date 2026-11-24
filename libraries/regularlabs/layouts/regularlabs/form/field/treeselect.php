@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -31,9 +31,6 @@ if (empty($options))
 }
 
 Document::loadTreeSelectAssets();
-Document::scriptDeclaration("
-    document.addEventListener('DOMContentLoaded', () => {RegularLabs.TreeSelect.init('" . $id . "')});
-");
 
 if ( ! is_array($value))
 {
@@ -148,7 +145,7 @@ if ( ! is_array($value))
             <div class="nav-hover treeselect-menu">
                 <div class="dropdown">
                     <button type="button" data-bs-toggle="dropdown" class="dropdown-toggle btn btn-sm btn-light">
-                        <span class="visually-hidden"><?php echo Text::sprintf('JGLOBAL_TOGGLE_DROPDOWN'); ?></span>
+                        <span class="visually-hidden"><?php echo Text::_('RL_SUBITEMS'); ?></span>
                     </button>
                     <div class="dropdown-menu">
                         <h1 class="dropdown-header"><?php echo Text::_('RL_SUBITEMS'); ?></h1>

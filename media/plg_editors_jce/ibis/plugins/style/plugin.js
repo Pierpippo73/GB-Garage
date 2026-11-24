@@ -1,4 +1,4 @@
-/* jce - 3.0.5 | 2026-11-11 | https://www.joomlacontenteditor.net | Source: https://github.com/widgetfactory/jce | Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+/* jce - 3.0.6 | 2026-11-18 | https://www.joomlacontenteditor.net | Source: https://github.com/widgetfactory/jce | Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
 !function() {
     "use strict";
     const BORDER_STYLE_RE = /^(none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset)$/i, BORDER_WIDTH_RE = /^(thin|medium|thick|\d+(\.\d+)?(px|em|rem|%|pt|cm|mm|ex|ch|vw|vh|vmin|vmax))$/i, URL_RE = /url\(["']?([^"')]+)["']?\)/i, SIDES = [ "top", "right", "bottom", "left" ];

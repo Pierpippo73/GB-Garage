@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Uri\Uri;
 
 // Some shortcuts to make life easier
-define('WF_VERSION', '3.0.5');
+define('WF_VERSION', '3.0.6');
 
 // JCE Administration Component
 define('WF_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/com_jce');

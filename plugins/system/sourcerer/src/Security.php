@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Sourcerer
- * @version         17.0.1
+ * @version         18.0.0
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -44,6 +44,14 @@ class Security
     ): object
     {
         return self::getForSource($area, 'authors', $creator_id, $modifier_id);
+    }
+
+    public static function userDataOwnerIsTrusted(int $user_id): bool
+    {
+        return RL_Security::userIsInGroups(
+            $user_id,
+            Params::get('php_usergroups', ['Super Users'])
+        );
     }
 
     public static function getForRenderedModule(string $module_type): object

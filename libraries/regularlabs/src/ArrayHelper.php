@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -321,8 +321,8 @@ class ArrayHelper
         if (empty($order)) {
             return $array;
         }
-        uksort($array, function ($key1, $key2) use ($order) {
-            return array_search($key1, $order) > array_search($key2, $order);
+        uksort($array, static function ($key1, $key2) use ($order): int {
+            return array_search($key1, $order) <=> array_search($key2, $order);
         });
         return $array;
     }

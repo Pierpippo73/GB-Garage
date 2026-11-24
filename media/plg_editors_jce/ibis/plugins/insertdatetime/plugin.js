@@ -1,4 +1,4 @@
-/* jce - 3.0.5 | 2026-11-11 | https://www.joomlacontenteditor.net | Source: https://github.com/widgetfactory/jce | Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+/* jce - 3.0.6 | 2026-11-18 | https://www.joomlacontenteditor.net | Source: https://github.com/widgetfactory/jce | Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
 ibis.PluginManager.add("insertdatetime", function(ed, url) {
     var daysShort = ed.getLang("insertdatetime.day_short", "Sun,Mon,Tue,Wed,Thu,Fri,Sat").split(","), daysLong = ed.getLang("insertdatetime.day_long", "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday").split(","), monthsShort = ed.getLang("insertdatetime.months_short", "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec").split(","), monthsLong = ed.getLang("insertdatetime.months_long", "January,February,March,April,May,June,July,August,September,October,November,December").split(","), defaultFormat = null;
     ed.getParam("insertdatetime", {});

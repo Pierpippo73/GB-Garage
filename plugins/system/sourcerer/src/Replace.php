@@ -1,7 +1,7 @@
 <?php
 /**
  * @package         Sourcerer
- * @version         17.0.1
+ * @version         18.0.0
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -585,7 +585,11 @@ class Replace
 
         $data = RL_PluginTag::getAttributesFromString($match['data']);
 
-        $content = trim($match['content']);
+        $content               = $match['content'];
+        $verify_article_source = $article !== null && ($security->verify_article_source ?? false);
+        $authored              = ArticleSource::consumeUserData($content, $match['data'])
+            ?? ( ! $verify_article_source || ArticleSource::consume($content, $match['data'], $article));
+        $content               = trim($content);
 
         $data->raw ??= false;
 
@@ -610,6 +614,11 @@ class Replace
         if ( ! is_null($restriction_message))
         {
             return Protect::getMessageCommentTag($restriction_message);
+        }
+
+        if ($code_usage->php && ! $authored)
+        {
+            return Protect::getMessageCommentTag(JText::_('SRC_CODE_REMOVED_UNTRUSTED'));
         }
 
 

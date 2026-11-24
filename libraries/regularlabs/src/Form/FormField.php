@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -47,6 +47,10 @@ class FormField extends JFormField
     public array $parent_request = [];
     public bool $use_ajax = \false;
     public bool $use_tree_select = \false;
+    protected bool $lookup_active = \false;
+    protected int $lookup_limit = 0;
+    protected string $lookup_search = '';
+    protected ?array $lookup_selected = null;
     /**
      * @param JForm $form
      */
@@ -59,6 +63,24 @@ class FormField extends JFormField
         $params = Parameters::getPlugin('regularlabs');
         $this->max_list_count = $this->max_list_count ?? $params->max_list_count;
         Document::loadAdminFormAssets();
+    }
+    public function filter($value, $group = null, ?Registry $input = null)
+    {
+        if (!$this->is_select_list || !$this->multiple) {
+            return parent::filter($value, $group, $input);
+        }
+        if ($value === '[]') {
+            $value = [];
+        }
+        if (is_array($value) && in_array('[]', $value, \true)) {
+            foreach ($value as $key => $item) {
+                if ($item === '[]') {
+                    unset($value[$key]);
+                }
+            }
+            $value = array_values($value);
+        }
+        return parent::filter($value, $group, $input);
     }
     /**
      * Get a value from the field params
@@ -74,6 +96,34 @@ class FormField extends JFormField
     public function getAjaxRaw(JRegistry|\RegularLabs\Library\Form\FormField $attributes): string
     {
         return $this->selectListForAjax($attributes);
+    }
+    public function getAjaxRawLookup(JRegistry $data): string
+    {
+        $this->parent_request = (array) $data->get('parent_request', []);
+        return \RegularLabs\Library\Form\SelectList::lookup($this, $data);
+    }
+    public function getOptionsForLookup(array $attributes, string $search = '', ?array $selected = null, int $limit = 0): array
+    {
+        $defaults = $this->attributes instanceof Registry ? $this->attributes->toArray() : (array) $this->attributes;
+        $attributes = [...$defaults, ...$attributes];
+        $this->params = $attributes;
+        $this->max_list_count = 0;
+        $this->lookup_active = \true;
+        $this->lookup_search = $search;
+        $this->lookup_selected = $selected;
+        $this->lookup_limit = $limit;
+        $options = \RegularLabs\Library\Form\SelectList::getSelectedOptions($this, $attributes, $selected);
+        if ($options !== null) {
+            return $options;
+        }
+        $options = $this->getListOptions($attributes);
+        if (!is_array($options)) {
+            return [];
+        }
+        if (!empty($attributes['text_as_value'])) {
+            $this->setTextAsValue($options);
+        }
+        return \RegularLabs\Library\Form\SelectList::filterOptions($options, $search, $selected, $limit);
     }
     public function getControlGroupEnd(): string
     {
@@ -180,10 +230,13 @@ class FormField extends JFormField
         }
         if (!empty($this->params)) {
             foreach ($this->params as $key => $value) {
-                $attributes[$key] = (string) $value;
+                $attributes[$key] = $this->sanitizeValue((string) $value);
             }
         }
         $tree_select = $this->use_tree_select && $multiple;
+        if (!empty($this->element->option)) {
+            $attributes['list_xml'] = $this->element->asXML();
+        }
         return \RegularLabs\Library\Form\Form::selectListAjax($this::class, $this->name, $this->value, $this->id, $attributes, $tree_select, $tree_select && $this->collapse_children);
     }
     public function selectListForAjax(JRegistry|\RegularLabs\Library\Form\FormField $data): string
@@ -236,10 +289,27 @@ class FormField extends JFormField
         if (!$this->is_select_list) {
             return '';
         }
-        if (!$this->use_ajax && !$this->use_tree_select) {
-            return $this->selectList();
-        }
         return $this->selectListAjax();
+    }
+    protected function applyLookupToQuery(JQueryInterface $query, array $columns, string $key): void
+    {
+        if (!$this->lookup_active) {
+            return;
+        }
+        if ($this->lookup_selected !== null) {
+            $query->where(DB::is($key, $this->lookup_selected));
+            return;
+        }
+        if ($this->lookup_search === '') {
+            return;
+        }
+        $escaped_search = $this->db->escape($this->lookup_search, \true);
+        $search = $this->db->quote('%' . $escaped_search . '%', \false);
+        $conditions = [];
+        foreach ($columns as $column) {
+            $conditions[] = $column . ' LIKE ' . $search;
+        }
+        $query->where('(' . implode(' OR ', $conditions) . ')');
     }
     /**
      * Method declaration must be compatible with JFormField::getLabel()
@@ -264,6 +334,9 @@ class FormField extends JFormField
      */
     protected function getOptions()
     {
+        if (!$this->element && $this->get('list_xml')) {
+            $this->element = new SimpleXMLElement($this->get('list_xml'));
+        }
         if (empty($this->element->option)) {
             return [];
         }
@@ -291,7 +364,7 @@ class FormField extends JFormField
     }
     protected function getOptionsByQuery(JQueryInterface $query, array $extras = [], int $levelOffset = 0, string $key = 'id'): array
     {
-        return $this->getOptionsByList($this->loadObjectListByQuery($query), $extras, $levelOffset, $key);
+        return $this->getOptionsByList(\RegularLabs\Library\Form\SelectListOptions::load($this, $query, $this->lookup_limit), $extras, $levelOffset, $key);
     }
     /**
      * Fix some syntax/encoding issues in option text strings
@@ -314,7 +387,7 @@ class FormField extends JFormField
     }
     private function loadObjectListByQuery(JQueryInterface $query): array
     {
-        $this->db->setQuery($query);
+        $this->db->setQuery($query, 0, $this->lookup_limit);
         return $this->db->loadObjectList();
     }
     private function setTextAsValue(array &$options): void

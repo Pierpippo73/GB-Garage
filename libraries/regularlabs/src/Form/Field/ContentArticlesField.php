@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -22,11 +22,17 @@ class ContentArticlesField extends FormField
     public bool $use_ajax = \true;
     public function getNamesByIds(array $values, array $attributes): array
     {
+        if ($this->get('id_alias_name_as_value', 0)) {
+            foreach ($values as $key => $value) {
+                $values[$key] = explode('::', (string) $value, 2)[0];
+            }
+        }
         $query = $this->db->getQuery(\true)->from('#__content AS i')->select('i.id, i.title as name, i.language, c.title as category, i.state as published')->join('LEFT', '#__categories AS c ON c.id = i.catid')->where(DB::is('i.id', $values))->order('i.title, i.ordering, i.id');
         return $this->getNamesByQuery($query, ['language', 'category', 'id', 'unpublished']);
     }
     protected function getOptions()
     {
+        $query = $this->db->getQuery(\true)->from('#__content AS i')->where('i.access > -1')->where('i.state > -1');
         if ($this->max_list_count) {
             $query = $this->db->getQuery(\true)->select('COUNT(*)')->from('#__content AS i')->where('i.access > -1')->where('i.state > -1');
             $this->db->setQuery($query);
@@ -42,6 +48,7 @@ class ContentArticlesField extends FormField
             $extras = ['language', 'category', 'id_number', 'unpublished'];
         }
         $query->clear('select')->select($id . ', i.id AS id_number, i.title AS name, i.language, c.title AS category, i.state AS published')->join('LEFT', '#__categories AS c ON c.id = i.catid')->order('i.title, i.ordering, i.id');
+        $this->applyLookupToQuery($query, ['i.title', 'i.alias', 'i.id', 'c.title', 'i.language'], 'i.id');
         $options = $this->getOptionsByQuery($query, $extras);
         if ($this->get('showselect')) {
             array_unshift($options, JHtml::_('select.option', '-', '&nbsp;', 'value', 'text', \true));

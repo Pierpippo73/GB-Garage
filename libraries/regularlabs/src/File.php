@@ -2,7 +2,7 @@
 
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -33,6 +33,14 @@ class File
         $url = \RegularLabs\Library\StringHelper::normalize($url);
         $info = pathinfo($url);
         return ($info['dirname'] ?? '') . '/' . ($info['filename'] ?? '') . $suffix . '.' . ($info['extension'] ?? '');
+    }
+    public static function canReadImportFile(array $file, int $maxBytes): bool
+    {
+        if (empty($file['tmp_name']) || !is_string($file['tmp_name']) || !is_readable($file['tmp_name'])) {
+            return \false;
+        }
+        $size = filesize($file['tmp_name']);
+        return $size !== \false && $size <= $maxBytes;
     }
     /**
      * Delete a file or array of files
@@ -114,6 +122,19 @@ class File
         }
         $show_messages && JLog::add(JText::sprintf('JLIB_FILESYSTEM_ERROR_FOLDER_DELETE', $path), JLog::WARNING, 'jerror');
         return \false;
+    }
+    public static function exportStringToFile(string $string, string $filename): never
+    {
+        if (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        ob_start();
+        header('Content-Type: application/octet-stream');
+        header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        echo $string;
+        exit;
     }
     /**
      * some/url/to/a/file.ext

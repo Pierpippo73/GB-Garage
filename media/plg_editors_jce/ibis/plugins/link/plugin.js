@@ -1,4 +1,4 @@
-/* jce - 3.0.5 | 2026-11-11 | https://www.joomlacontenteditor.net | Source: https://github.com/widgetfactory/jce | Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
+/* jce - 3.0.6 | 2026-11-18 | https://www.joomlacontenteditor.net | Source: https://github.com/widgetfactory/jce | Copyright (C) 2006 - 2026 Ryan Demmer. All rights reserved | GNU/GPL Version 2 or later - http://www.gnu.org/licenses/gpl-2.0.html */
 !function() {
     function isAnchor(elm) {
         return elm && "a" === elm.nodeName.toLowerCase();
@@ -179,14 +179,14 @@
                     icon: "link",
                     cmd: "mceLink",
                     ui: !0
-                }), "A" != e.nodeName || ed.dom.getAttrib(e, "name") || m.add({
+                }), ed.dom.getParent(e, "a") && m.add({
                     title: "advanced.unlink_desc",
                     icon: "unlink",
                     cmd: "UnLink"
                 });
             });
         }), ed.onNodeChange.add(function(ed, cm, n, co) {
-            n = ed.dom.getParent(n, "a[href]"), ed = n && ed.dom.hasClass(n, "mce-item-anchor");
+            n = ed.dom.getParent(n, "a"), ed = n && ed.dom.hasClass(n, "mce-item-anchor");
             cm.setActive("unlink", n), cm.setActive("link", n), cm.setDisabled("link", ed);
         }), this.createControl = function(n, cm) {
             var html;
@@ -225,7 +225,7 @@
                 m.onShowMenu.add(function() {
                     var selection = ed.selection, value = "", node = (DOM.setAttrib(ed.id + "_link_unlink", "disabled", "disabled"), 
                     ed.dom.getParent(selection.getNode(), "a[href]"));
-                    isAnchor(node) && (selection.select(node), value = node.getAttribute("href"), 
+                    node && (selection.select(node), value = node.getAttribute("href"), 
                     DOM.setAttrib(ed.id + "_link_unlink", "disabled", null)), window.setTimeout(function() {
                         DOM.get(ed.id + "_link_input").focus();
                     }, 10), DOM.setValue(ed.id + "_link_input", value);

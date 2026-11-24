@@ -1,6 +1,6 @@
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -11,13 +11,9 @@
 (async function() {
     'use strict';
 
-    await customElements.whenDefined('joomla-field-fancy-select');
+    const initializedInputs = new WeakSet();
 
-    if (document.readyState === 'complete') {
-        initialize();
-    } else {
-        window.addEventListener('load', initialize, {once: true});
-    }
+    await customElements.whenDefined('joomla-field-fancy-select');
 
     new MutationObserver((mutations) => {
         const hasSimpleCategory = mutations.some((mutation) => [...mutation.addedNodes].some((node) => (
@@ -30,54 +26,63 @@
         }
     }).observe(document.documentElement, {childList: true, subtree: true});
 
+    if (document.readyState !== 'complete') {
+        window.addEventListener('load', initialize, {once: true});
+        return;
+    }
+
+    initialize();
+
     function initialize() {
         let pendingInitialization = false;
 
-        document.querySelectorAll('rl-field-simple-category').forEach((simpleCategory) => {
+        for (const simpleCategory of document.querySelectorAll('rl-field-simple-category')) {
             const fancySelect = simpleCategory.querySelector('joomla-field-fancy-select');
-            const input       = simpleCategory.querySelector('input.choices__input');
 
-            if (simpleCategory.dataset.initialized) {
-                return;
-            }
-
-            if ( ! fancySelect || ! input || ! fancySelect.choicesInstance) {
+            if ( ! fancySelect?.choicesInstance) {
                 pendingInitialization = true;
-                return;
+                continue;
             }
 
-            simpleCategory.dataset.initialized = 'true';
-
-            const choices = fancySelect.choicesInstance;
-
-            simpleCategory.querySelector('.choices__inner')?.addEventListener('click', (event) => {
-                event.stopPropagation();
-                choices.showDropdown();
-
-                requestAnimationFrame(() => input.focus());
-            });
-
-            input.addEventListener('keydown', (event) => {
-                const category = input.value.trim();
-
-                if (event.key !== 'Enter' || ! category.length) {
-                    return;
-                }
-
-                event.preventDefault();
-                event.stopImmediatePropagation();
-
-                choices.setChoices([{
-                    value   : category,
-                    label   : category,
-                    selected: true,
-                }], 'value', 'label', false);
-                choices.hideDropdown();
-            });
-        });
+            initializeField(fancySelect.choicesInstance);
+        }
 
         if (pendingInitialization) {
             window.setTimeout(initialize, 0);
         }
+    }
+
+    function initializeField(choices) {
+        const input = choices.input.element;
+
+        if (initializedInputs.has(input)) {
+            return;
+        }
+
+        initializedInputs.add(input);
+        choices.containerInner.element.addEventListener('click', (event) => {
+            event.stopPropagation();
+            choices.showDropdown();
+
+            requestAnimationFrame(() => input.focus());
+        });
+
+        input.addEventListener('keydown', (event) => {
+            const category = input.value.trim();
+
+            if (event.key !== 'Enter' || ! category.length) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            choices.setChoices([{
+                value   : category,
+                label   : category,
+                selected: true,
+            }], 'value', 'label', false);
+            choices.hideDropdown();
+        });
     }
 })();

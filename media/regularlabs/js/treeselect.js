@@ -1,6 +1,6 @@
 /**
  * @package         Regular Labs Library
- * @version         26.10.25669
+ * @version         26.11.17024
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://regularlabs.com
@@ -15,13 +15,26 @@
 
     window.RegularLabs.TreeSelect = window.RegularLabs.TreeSelect || {
         direction: (document.dir !== undefined) ? document.dir : document.getElementsByTagName("html")[0].getAttribute("dir"),
+        initialized: new WeakSet(),
 
         init: function(id) {
-            const menu = document.querySelector('div#rl-treeselect-' + id);
+            this.initElement(document.getElementById('rl-treeselect-' + id));
+        },
 
-            if ( ! menu) {
+        initAll: function(root = document) {
+            if (root.matches?.('.rl-treeselect')) {
+                this.initElement(root);
+            }
+
+            root.querySelectorAll('.rl-treeselect').forEach(menu => this.initElement(menu));
+        },
+
+        initElement: function(menu) {
+            if ( ! menu || this.initialized.has(menu)) {
                 return;
             }
+
+            this.initialized.add(menu);
 
             const list             = menu.querySelector('ul');
             const top_level_items  = list.querySelectorAll(':scope > li');
@@ -39,15 +52,13 @@
             items.forEach((item) => {
                 const checkbox = item.querySelector(':scope > .treeselect-item > input');
 
-                if ( ! checkbox) {
-                    return;
-                }
-
-                item.classList.toggle('rl-item-checked', checkbox.checked);
-
-                checkbox.addEventListener('change', () => {
+                if (checkbox) {
                     item.classList.toggle('rl-item-checked', checkbox.checked);
-                });
+
+                    checkbox.addEventListener('change', () => {
+                        item.classList.toggle('rl-item-checked', checkbox.checked);
+                    });
+                }
 
                 const child_list = item.querySelector(':scope > ul.treeselect-sub');
 
@@ -79,7 +90,7 @@
                     this.check(child_list, 'toggle');
                 });
 
-                if (checkbox.dataset['rlTreeselectCollapseChildren']) {
+                if (checkbox?.dataset['rlTreeselectCollapseChildren']) {
                     // Collapse children if top level parent is selected
                     if (checkbox.checked) {
                         sub_tree_expand.collapsed = false;
@@ -196,9 +207,10 @@
                     return;
                 }
 
-                checkbox.checked = checked === 'toggle' ? ! checkbox.checked : checked;
+                const is_checked = checked === 'toggle' ? ! checkbox.checked : checked;
 
-                item.classList.toggle('rl-item-checked', checked);
+                checkbox.checked = is_checked;
+                item.classList.toggle('rl-item-checked', is_checked);
             });
         },
 
@@ -230,4 +242,11 @@
 
         }
     };
+
+    document.addEventListener('DOMContentLoaded', () => RegularLabs.TreeSelect.initAll());
+    document.addEventListener('joomla:updated', (event) => RegularLabs.TreeSelect.initAll(event.target));
+
+    if (document.readyState !== 'loading') {
+        RegularLabs.TreeSelect.initAll();
+    }
 })();
